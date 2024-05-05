@@ -1,6 +1,5 @@
 import pygame
 import sys
-import random
 
 # Инициализация Pygame
 pygame.init()
@@ -22,12 +21,15 @@ background1_rect = background_rect.copy()
 background2_rect = background_rect.copy()
 background2_rect.x = background_width
 
-# Загрузка спрайтов героя
-player_image = pygame.image.load("hero\hero_stands_1.png")
+# Загрузка спрайтов игрока
+player_image = pygame.image.load("player\player_stands_1.png")
 player_size = (100, 100)
-player_image = pygame.transform.scale(player_image, player_size)
+player_image = pygame.transform.scale(player_image, player_size) # Изменение разрешения спрайта
+player_walks = [pygame.image.load(f"player/player_walks_{i}.png") for i in range(1, 5)]
+player_size_walks = (70, 100)
+player_walks = [pygame.transform.scale(img, player_size_walks) for img in player_walks]
 
-# Параметры героя
+# Параметры игрока
 player_on_ground_y = 202
 player_pos_x = 75
 player_pos_y = player_on_ground_y
@@ -37,15 +39,19 @@ jump_speed = jump_strength  # Начальная скорость прыжка
 on_ground = True
 shoot_start_time = 0
 player_speed = 0
+current_walk_frame = 0 # Индекс текущего кадра анимации ходьбы
 
 # Загрузка звуков
-shoot_sound = pygame.mixer.Sound("hero/sounds/weapons/pistol_shoot.wav")
-hero_jumps = pygame.mixer.Sound("hero/sounds/hero_jumps.wav")
-hero_runs = pygame.mixer.Sound("hero/sounds/hero_runs_1.wav")
+shoot_sound = pygame.mixer.Sound("player/sounds/weapons/pistol_shoot.wav")
+player_jumps = pygame.mixer.Sound("player/sounds/player_jumps.wav")
+player_runs = pygame.mixer.Sound("player/sounds/player_runs_1.wav")
 
 # Фоновая музыка
 pygame.mixer.music.load("back_music.mp3")
 pygame.mixer.music.play(-1)
+
+# Переменная для отслеживания времени смены кадров анимации
+last_frame_change_time = pygame.time.get_ticks()
 
 # Игровой цикл
 while True:
@@ -58,32 +64,32 @@ while True:
             if event.key == pygame.K_LEFT:
                 player_speed = 5
                 if on_ground:
-                    hero_runs.play(-1)
+                    player_runs.play(-1)
             elif event.key == pygame.K_RIGHT:
                 player_speed = -5
                 if on_ground:
-                    hero_runs.play(-1)
+                    player_runs.play(-1)
             elif event.key == pygame.K_UP and on_ground:
-                hero_jumps.play()
+                player_jumps.play()
                 jump_speed = jump_strength  # Восстанавливаем начальную скорость прыжка
                 on_ground = False
             elif event.key == pygame.K_SPACE:
                 shoot_sound.play()
-                player_image = pygame.image.load("hero\hero_pistol_shoots.png")
-                player_image = pygame.transform.scale(player_image, player_size)
+                player_stands = pygame.image.load("player\player_pistol_shoots.png")
+                player_stands = pygame.transform.scale(player_stands, player_size)
                 shoot_start_time = pygame.time.get_ticks()  # Запоминаем время начала выстрела
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
                 player_speed = 0
-                hero_runs.stop()
+                player_runs.stop()
 
-    # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт hero_stands
+    # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт player_stands
     current_time = pygame.time.get_ticks()
     if current_time - shoot_start_time >= 50:
-        player_image = pygame.image.load("hero\hero_stands_1.png")
-        player_image = pygame.transform.scale(player_image, player_size)
+        player_stands = pygame.image.load("player\player_stands_1.png")
+        player_stands = pygame.transform.scale(player_stands, player_size)
 
-    # Перемещение фонов для создания иллюзии движения героя
+    # Перемещение фонов для создания иллюзии движения игрока
     background1_rect.x += player_speed
     background2_rect.x += player_speed
 
@@ -91,7 +97,7 @@ while True:
     if not on_ground:
         player_pos_y -= jump_speed
         jump_speed -= gravity
-        # Если герой касается земли, устанавливаем булеву on_ground в True
+        # Если игрок касается земли, устанавливаем булеву on_ground в True
         if player_pos_y >= player_on_ground_y:
             player_pos_y = player_on_ground_y
             on_ground = True
@@ -109,7 +115,24 @@ while True:
     # Отрисовка фонов и объектов
     screen.blit(background, background1_rect)
     screen.blit(background, background2_rect)
-    screen.blit(player_image, (player_pos_x, player_pos_y))
+
+    # Анимация player_walks
+    if player_speed < 0:
+        screen.blit(player_walks[current_walk_frame], (player_pos_x, player_pos_y))
+    elif player_speed > 0:
+        screen.blit(player_walks[current_walk_frame], (player_pos_x, player_pos_y))
+    else:
+        # Игрок стоит на месте
+        screen.blit(player_stands, (player_pos_x, player_pos_y))
+
+    # Изменение current_walk_frame каждый 100 млс
+    if current_time - last_frame_change_time >= 100:  # Переключение кадров player_walks каждые 0.1 секунды
+        if player_speed < 0:
+            current_walk_frame = (current_walk_frame + 1) % len(player_walks)
+            last_frame_change_time = current_time
+        if player_speed > 0:
+            current_walk_frame = (current_walk_frame - 1) % len(player_walks)
+            last_frame_change_time = current_time
 
     # Обновление экрана после отрисовки объектов
     pygame.display.flip()
