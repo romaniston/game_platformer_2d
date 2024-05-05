@@ -1,2 +1,2 @@
-# game_make_me_chill
+# game_platformer_2d
  Платформер на PyGame
