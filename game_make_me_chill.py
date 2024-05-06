@@ -176,7 +176,7 @@ while True:
 
                 # Уменьшение здоровья врага при выстреле и уничтожение
                 clothest_enemy = find_closest_enemy(player_pos_x)
-                if on_ground: # Если противник на земле, он попадает по противникам
+                if on_ground: # Если игрок на земле, он попадает по противникам
                     if clothest_enemy:
                         if clothest_enemy.health > 0:
                             clothest_enemy.health -= 1
