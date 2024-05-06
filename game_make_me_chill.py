@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # Инициализация Pygame
 pygame.init()
@@ -21,7 +22,7 @@ background1_rect = background_rect.copy()
 background2_rect = background_rect.copy()
 background2_rect.x = background_width
 
-# Загрузка спрайтов игрока
+# Загрузка спрайтов
 player_image_player_stands_path = "player\player_stands_1.png"
 player_image = pygame.image.load(player_image_player_stands_path)
 player_size = (100, 100)
@@ -29,6 +30,10 @@ player_image = pygame.transform.scale(player_image, player_size) # Измене�
 player_walks = [pygame.image.load(f"player/player_walks_{i}.png") for i in range(1, 5)]
 player_size_walks = (70, 100)
 player_walks = [pygame.transform.scale(img, player_size_walks) for img in player_walks]
+
+enemy_sprite_path = "enemies/enemy_walks_1.png"
+enemy_sprite = pygame.image.load(enemy_sprite_path)
+enemy_size = (100, 100)
 
 # Параметры игрока
 player_on_ground_y = 202
@@ -43,15 +48,17 @@ player_speed = 0
 current_walk_frame = 0 # Индекс текущего кадра анимации ходьбы
 player_shooting = False
 is_running_sound_playing = False # Переменная для отслеживания проигрывания звука бега
+speed_val = 5
 
 # Загрузка звуков
-shoot_sound = pygame.mixer.Sound("player/sounds/weapons/pistol_shoot.wav")
-player_jumps = pygame.mixer.Sound("player/sounds/player_jumps.wav")
-player_runs = pygame.mixer.Sound("player/sounds/player_runs_1.wav")
+player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/pistol_shoot.wav")
+player_jumps_sound = pygame.mixer.Sound("player/sounds/player_jumps.wav")
+player_runs_sound = pygame.mixer.Sound("player/sounds/player_runs_1.wav")
+enemy_dies_sound = pygame.mixer.Sound("enemies/sounds/enemy_death.wav")
 
 # Фоновая музыка
 pygame.mixer.music.load("back_music.mp3")
-# pygame.mixer.music.play(-1)
+pygame.mixer.music.play(-1)
 
 # Переменная для отслеживания времени смены кадров анимации
 last_frame_change_time = pygame.time.get_ticks()
@@ -59,6 +66,89 @@ last_frame_change_time_stands = pygame.time.get_ticks()
 
 # Переменная для текущего времени
 current_time = pygame.time.get_ticks()
+
+# Класс противника
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, background):
+        super().__init__()
+        self.image = enemy_sprite
+        self.image = pygame.transform.scale(enemy_sprite, enemy_size)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
+        self.rect.y = (player_on_ground_y) # Высота противника
+        self.speed = random.randint(1, 3) # Случайная скорость
+        self.background = background
+
+        # Загружаем анимации противника
+        # Список изображений для анимации уничтожения
+        self.death_images = []
+        for img_dth in range(6):
+            self.death_images.append(pygame.image.load(f"enemies/enemy_death_{img_dth + 1}.png"))
+        self.death_index = 0  # Индекс текущего изображения анимации смерти
+        self.death_timer = 0 # Таймер для анимации смерти
+        # Анимация ходьбы
+        self.walks_images = []
+        for img_wlk in range(4):
+            self.walks_images.append(pygame.image.load(f"enemies/enemy_walks_{img_wlk + 1}.png"))
+        self.walks_index = 0  # Индекс текущего изображения анимации ходьбы
+        self.walks_timer = 0 # Таймер для анимации ходьбы
+
+        self.speed = random.randint(1, 3) # Случайная скорость
+        self.health = 3 # Здоровье
+        self.is_alive = True # Флаг жив ли противник
+
+
+    # Функция постоянного обновления состояния противника
+    def update(self):
+        self.rect.x -= self.speed - player_speed # Движение противника на игрока
+        # Если противник (живой либо уничтоженный) уходит за левый край на -100 по x, то он исчезает
+        if self.rect.right <= -100:
+            self.kill()
+        elif self.health > 0: # Если противник жив
+            # Запуск анимации ходьбы противника
+            if self.walks_index < len(self.walks_images):
+                self.walks_timer += 1
+                if self.walks_timer >= 15 / self.speed :  # Задержка, зависящая от скорости движения противника, чем он
+                                                          # медленнее идет, тем выше задержка переключения кадров
+                    self.image = pygame.transform.scale(self.walks_images[self.walks_index], enemy_size)
+                    self.walks_index += 1
+                    self.walks_timer = 0
+                    if self.walks_index == len(self.walks_images):
+                        self.walks_index = 0
+        else: # Если убит
+            self.is_alive = False
+            # Запуск анимации уничтожения противника
+            if self.death_index < len(self.death_images):
+                self.death_timer += 1
+                if self.death_timer >= 5:  # Задержка в пол секунды
+                    self.image = pygame.transform.scale(self.death_images[self.death_index], enemy_size)
+                    self.death_index += 1
+                    self.death_timer = 0
+                    enemy_dies_sound.play()
+            else:
+                self.speed = 0
+
+# Создание группы для противников для отрисовки всех противников одновременно
+enemies = pygame.sprite.Group()
+
+# Функция для определения самого ближайшего живого противника к игроку
+def find_closest_enemy(player_pos_x):
+    closest_enemy = None
+    min_distance = float('inf')  # Для вычесления противника с наименьшей дистанцией к игроку
+    # Перебор всех существующих противников
+    for enemy in enemies:
+        if not enemy.is_alive: # Если противник убит, исключаем его из цикла
+            continue
+        else:
+            distance = abs(enemy.rect.x - player_pos_x) # Вычисление дистанции до игрока текущего противника
+            if distance < min_distance:
+                min_distance = distance
+                closest_enemy = enemy
+            if enemy.health <= 0:  # Проверяем, жив ли противник
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_enemy = enemy
+    return closest_enemy
 
 # Игровой цикл
 while True:
@@ -69,38 +159,61 @@ while True:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                player_speed = 5
+                player_speed = speed_val
             elif event.key == pygame.K_RIGHT:
-                player_speed = -5
+                player_speed = - speed_val
             elif event.key == pygame.K_UP and on_ground:
-                player_jumps.play()
-                jump_speed = jump_strength  # Восстанавливаем начальную скорость прыжка
+                player_jumps_sound.play()
+                jump_speed = jump_strength # Восстанавливаем начальную скорость прыжка
                 on_ground = False
-                player_runs.stop()
+                player_runs_sound.stop()
             elif event.key == pygame.K_SPACE:
-                shoot_sound.play()
+                player_shoots_sound.play()
                 player_shooting = True
                 player_image = pygame.image.load("player\player_pistol_shoots.png")
                 player_image = pygame.transform.scale(player_image, player_size)
-                shoot_start_time = pygame.time.get_ticks()  # Запоминаем время начала выстрела
+                shoot_start_time = pygame.time.get_ticks() # Запоминаем время начала выстрела
+
+                # Уменьшение здоровья врага при выстреле и уничтожение
+                clothest_enemy = find_closest_enemy(player_pos_x)
+                if on_ground: # Если противник на земле, он попадает по противникам
+                    if clothest_enemy:
+                        if clothest_enemy.health > 0:
+                            clothest_enemy.health -= 1
+                            clothest_enemy.rect.x += 10 # Инерция противника от выстрела
+                else:
+                    pass
+
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
                 player_speed = 0
-                player_runs.stop()
+                player_runs_sound.stop()
 
     # Воспроизведение звука бега, если игрок находится на земле и движется
     if on_ground and (player_speed != 0) and not is_running_sound_playing:
-        player_runs.play(-1)
+        player_runs_sound.play(-1)
         is_running_sound_playing = True
     elif (player_speed == 0) or (not on_ground):
-        player_runs.stop()
+        player_runs_sound.stop()
         is_running_sound_playing = False
 
     # Получение обновляемого текущего времени
     current_time = pygame.time.get_ticks()
 
+    # Увеличение скорости игрока при прыжке
+    if not on_ground:
+        if player_speed > 0:
+            player_speed = speed_val + 5
+        if player_speed < 0:
+            player_speed = speed_val - 15
+    else:
+        if player_speed > 0:
+            player_speed = speed_val
+        if player_speed < 0:
+            player_speed = - speed_val
+
     # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт player_stands
-    if current_time - shoot_start_time >= 50:
+    if current_time - shoot_start_time >= 100:
         player_image = pygame.image.load(player_image_player_stands_path)
         player_image = pygame.transform.scale(player_image, player_size)
         player_shooting = False
@@ -128,9 +241,18 @@ while True:
     elif background2_rect.left >= WIDTH:
         background2_rect.x = background1_rect.left - background_width
 
+    # Создание противника с определенной вероятностью
+    if random.randint(1, 50) == 1:
+        enemy = Enemy(background)
+        enemies.add(enemy)
+
+    # Обновление позиций противников
+    enemies.update()
+
     # Отрисовка фонов и объектов
     screen.blit(background, background1_rect)
     screen.blit(background, background2_rect)
+    enemies.draw(screen)
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     if player_speed < 0:
@@ -180,13 +302,11 @@ while True:
             player_image = pygame.transform.scale(player_image, player_size)
             last_frame_change_time_stands = current_time
             player_image_player_stands_path = "player\player_stands_2.png"
-            print('1')
         else:
             player_image = pygame.image.load(player_image_player_stands_path)
             player_image = pygame.transform.scale(player_image, player_size)
             last_frame_change_time_stands = current_time
             player_image_player_stands_path = "player\player_stands_1.png"
-            print('2')
 
     # Обновление экрана после отрисовки объектов
     pygame.display.flip()
