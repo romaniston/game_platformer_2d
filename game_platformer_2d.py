@@ -1,188 +1,49 @@
 import pygame
 import sys
 import random
+import game, player, enemy, weapon
 
 # Инициализация Pygame
 pygame.init()
 
-# Ставим экран с резолюшином
-WIDTH, HEIGHT = 800, 360
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("DOOM RUNNER")
+# Установка разрешения
+screen, WIDTH, HEIGHT = game.set_screen_resolution(800, 360)
 
-# Загрузка фонов
-background = pygame.image.load("background.jpg")
-background_rect = background.get_rect()
+# Установка бэкграунда
+background, background_rect, background_width, background1_rect, background2_rect = game.set_backrounds("assets/background/background.jpg")
 
-# Параметры фона
-background_width = background_rect.width
+# Установка и запуск фоновой музыки
+game.set_background_music("assets/background/background_music.mp3")
 
-# Создание двух экземпляров фона для бесконечной прокрутки
-background1_rect = background_rect.copy()
-background2_rect = background_rect.copy()
-background2_rect.x = background_width
+# Установка спрайтов игрока
+player_image_player_stands_path, player_image, player_size, player_image, player_walks, player_size_walks, player_walks = player.set_player_sprites()
 
-# Загрузка спрайтов
-player_image_player_stands_path = "player\player_stands_1.png"
-player_image = pygame.image.load(player_image_player_stands_path)
-player_size = (200, 100)
-player_image = pygame.transform.scale(player_image, player_size) # Изменение разрешения спрайта
-player_walks = [pygame.image.load(f"player/player_walks_{i}.png") for i in range(1, 5)]
-player_size_walks = (200, 100)
-player_walks = [pygame.transform.scale(img, player_size_walks) for img in player_walks]
+# Установка спрайтов врагов
+enemy_sprite_path, enemy_sprite, enemy_size = enemy.set_enemy_sprites()
 
-enemy_sprite_path = "enemies/enemy_walks_1.png"
-enemy_sprite = pygame.image.load(enemy_sprite_path)
-enemy_size = (100, 100)
+# Установка параметров игрока
+player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_speed, on_ground, \
+    shoot_start_time, shoot_last_time, player_speed, current_walk_frame, player_shooting, is_running_sound_playing,\
+    speed_val, selected_weapon, shooting_player_image, shoot_button_pressed, ammo_supershotgun_left,\
+    supershotgun_reload_ping = player.set_player_parameters()
 
-# weapons_bar (панель выбора оружия)
-pistol_icon_on_bar = pygame.image.load("weapons_bar/pistol_selected.png")
-pistol_icon_on_bar_size = (80, 70)
-pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
-pistol_icon_on_bar_rect = pistol_icon_on_bar.get_rect()
-pistol_icon_on_bar_rect.x = 0
-shotgun_icon_on_bar = pygame.image.load("weapons_bar/shotgun_not_selected.png")
-shotgun_icon_on_bar_size = (80, 70)
-shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
-shotgun_icon_on_bar_rect = shotgun_icon_on_bar.get_rect()
-shotgun_icon_on_bar_rect.x = 80
-mp5_icon_on_bar = pygame.image.load("weapons_bar/mp5_not_selected.png")
-mp5_icon_on_bar_size = (80, 70)
-mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, shotgun_icon_on_bar_size)
-mp5_icon_on_bar_rect = mp5_icon_on_bar.get_rect()
-mp5_icon_on_bar_rect.x = 160
-supershotgun_icon_on_bar = pygame.image.load("weapons_bar/supershotgun_not_selected.png")
-supershotgun_icon_on_bar_size = (80, 70)
-supershotgun_icon_on_bar = pygame.transform.scale(supershotgun_icon_on_bar, shotgun_icon_on_bar_size)
-supershotgun_icon_on_bar_rect = supershotgun_icon_on_bar.get_rect()
-supershotgun_icon_on_bar_rect.x = 240
+# Установка параметров панели с оружием
+pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
+        shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect,\
+        mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect,\
+        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect = weapon.weapons_bar_parameters()
 
-# Параметры игрока
-player_on_ground_y = 202
-player_pos_x = 75
-player_pos_y = player_on_ground_y
-jump_strength = 18
-gravity = 1
-jump_speed = jump_strength  # Начальная скорость прыжка
-on_ground = True
-shoot_start_time = 0
-shoot_last_time = 0
-player_speed = 0
-current_walk_frame = 0 # Индекс текущего кадра анимации ходьбы
-player_shooting = False
-is_running_sound_playing = False # Переменная для отслеживания проигрывания звука бега
-speed_val = 5
-selected_weapon = 'pistol'
-shooting_player_image = pygame.image.load("player\player_pistol_shoots.png")
-shoot_button_pressed = False
-ammo_supershotgun_left = 2
-supershotgun_reload_ping = 0
+# Установка звуковых эффектов
+player_shoots_sound, player_jumps_sound, player_runs_sound = player.set_player_sounds()
+enemy_dies_sound = enemy.set_enemy_sounds()
+selected_weapon_sound = weapon.set_selected_weapon_sounds()
 
-# Загрузка звуков
-player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/pistol_shoot.wav")
-player_jumps_sound = pygame.mixer.Sound("player/sounds/player_jumps.wav")
-player_runs_sound = pygame.mixer.Sound("player/sounds/player_runs_1.wav")
-enemy_dies_sound = pygame.mixer.Sound("enemies/sounds/enemy_death.wav")
-selected_weapon_sound = pygame.mixer.Sound("player/sounds/weapons/select_weapon.mp3")
-
-# Фоновая музыка
-pygame.mixer.music.load("back_music.mp3")
-pygame.mixer.music.play(-1)
-
-# Переменная для отслеживания времени смены кадров анимации
+# Переменные для отслеживания времени смены кадров анимации
 last_frame_change_time = pygame.time.get_ticks()
 last_frame_change_time_stands = pygame.time.get_ticks()
 
 # Переменная для текущего времени
 current_time = pygame.time.get_ticks()
-
-# Класс противника
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self, background):
-        super().__init__()
-        self.image = enemy_sprite
-        self.image = pygame.transform.scale(enemy_sprite, enemy_size)
-        self.rect = self.image.get_rect()
-        self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
-        self.rect.y = (player_on_ground_y) # Высота противника
-        self.speed = random.randint(1, 3) # Случайная скорость
-        self.background = background
-
-        # Загружаем анимации противника
-        # Список изображений для анимации уничтожения
-        self.death_images = []
-        for img_dth in range(6):
-            self.death_images.append(pygame.image.load(f"enemies/enemy_death_{img_dth + 1}.png"))
-        self.death_index = 0  # Индекс текущего изображения анимации смерти
-        self.death_timer = 0 # Таймер для анимации смерти
-        # Анимация ходьбы
-        self.walks_images = []
-        for img_wlk in range(4):
-            self.walks_images.append(pygame.image.load(f"enemies/enemy_walks_{img_wlk + 1}.png"))
-        self.walks_index = 0  # Индекс текущего изображения анимации ходьбы
-        self.walks_timer = 0 # Таймер для анимации ходьбы
-
-        self.speed = random.randint(1, 3) # Случайная скорость
-        self.health = 3 # Здоровье
-        self.is_alive = True # Флаг жив ли противник
-        self.death_sound_active = False
-
-
-    # Функция постоянного обновления состояния противника
-    def update(self):
-        self.rect.x -= self.speed - player_speed # Движение противника на игрока
-        # Если противник (живой либо уничтоженный) уходит за левый край на -100 по x, то он исчезает
-        if self.rect.right <= -100:
-            self.kill()
-        elif self.health > 0: # Если противник жив
-            # Запуск анимации ходьбы противника
-            if self.walks_index < len(self.walks_images):
-                self.walks_timer += 1
-                if self.walks_timer >= 15 / self.speed :  # Задержка, зависящая от скорости движения противника, чем он
-                                                          # медленнее идет, тем выше задержка переключения кадров
-                    self.image = pygame.transform.scale(self.walks_images[self.walks_index], enemy_size)
-                    self.walks_index += 1
-                    self.walks_timer = 0
-                    if self.walks_index == len(self.walks_images):
-                        self.walks_index = 0
-        else: # Если убит
-            self.is_alive = False
-            self.speed = 0
-            # Запуск анимации уничтожения противника
-            if self.death_index < len(self.death_images):
-                self.death_timer += 1
-                if self.death_timer >= 5:  # Задержка в пол секунды
-                    self.image = pygame.transform.scale(self.death_images[self.death_index], enemy_size)
-                    self.death_index += 1
-                    self.death_timer = 0
-                    if not self.death_sound_active:
-                        enemy_dies_sound.play()
-                        self.death_sound_active = True
-            else:
-                self.speed = 0
-
-# Создание группы для противников для отрисовки всех противников одновременно
-enemies = pygame.sprite.Group()
-
-# Функция для определения самого ближайшего живого противника к игроку
-def find_closest_enemy(player_pos_x):
-    closest_enemy = None
-    min_distance = float('inf')  # Для вычесления противника с наименьшей дистанцией к игроку
-    # Перебор всех существующих противников
-    for enemy in enemies:
-        if not enemy.is_alive: # Если противник убит, исключаем его из цикла
-            continue
-        else:
-            distance = abs(enemy.rect.x - player_pos_x) # Вычисление дистанции до игрока текущего противника
-            if enemy.rect.x > player_pos_x:
-                if distance < min_distance:
-                    min_distance = distance
-                    closest_enemy = enemy
-                if enemy.health <= 0:  # Проверяем, жив ли противник
-                    if distance < min_distance:
-                        min_distance = distance
-                        closest_enemy = enemy
-    return closest_enemy
 
 # Игровой цикл
 while True:
@@ -216,12 +77,12 @@ while True:
             # Выбор оружия
             elif event.key == pygame.K_1:
                 selected_weapon = 'pistol'
-                player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/pistol_shoot.wav")
-                shooting_player_image =pygame.image.load("player\player_pistol_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("weapons_bar/pistol_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("weapons_bar/shotgun_not_selected.png")
-                mp5_icon_on_bar = pygame.image.load("weapons_bar/mp5_not_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("weapons_bar/supershotgun_not_selected.png")
+                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/pistol_shoot.wav")
+                shooting_player_image =pygame.image.load("assets/player/player_pistol_shoots.png")
+                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_selected.png")
+                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_not_selected.png")
+                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_not_selected.png")
+                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_not_selected.png")
                 pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
                 shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
                 mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
@@ -230,12 +91,12 @@ while True:
                 selected_weapon_sound.play()
             elif event.key == pygame.K_2:
                 selected_weapon = 'shotgun'
-                player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/shotgun_shoot.wav")
-                shooting_player_image = pygame.image.load("player\player_shotgun_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("weapons_bar/pistol_not_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("weapons_bar/shotgun_selected.png")
-                mp5_icon_on_bar = pygame.image.load("weapons_bar/mp5_not_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("weapons_bar/supershotgun_not_selected.png")
+                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/shotgun_shoot.wav")
+                shooting_player_image = pygame.image.load("assets/player/player_shotgun_shoots.png")
+                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_not_selected.png")
+                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_selected.png")
+                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_not_selected.png")
+                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_not_selected.png")
                 pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
                 shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
                 mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
@@ -244,12 +105,12 @@ while True:
                 selected_weapon_sound.play()
             elif event.key == pygame.K_3:
                 selected_weapon = 'mp5'
-                player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/mp5_shoot.wav")
-                shooting_player_image = pygame.image.load("player\player_mp5_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("weapons_bar/pistol_not_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("weapons_bar/shotgun_not_selected.png")
-                mp5_icon_on_bar = pygame.image.load("weapons_bar/mp5_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("weapons_bar/supershotgun_not_selected.png")
+                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/mp5_shoot.wav")
+                shooting_player_image = pygame.image.load("assets/player/player_mp5_shoots.png")
+                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_not_selected.png")
+                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_not_selected.png")
+                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_selected.png")
+                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_not_selected.png")
                 pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
                 shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
                 mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
@@ -258,12 +119,12 @@ while True:
                 selected_weapon_sound.play()
             elif event.key == pygame.K_4:
                 selected_weapon = 'supershotgun'
-                player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/supershotgun_shoot.wav")
-                shooting_player_image = pygame.image.load("player\player_supershotgun_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("weapons_bar/pistol_not_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("weapons_bar/shotgun_not_selected.png")
-                mp5_icon_on_bar = pygame.image.load("weapons_bar/mp5_not_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("weapons_bar/supershotgun_selected.png")
+                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/supershotgun_shoot.wav")
+                shooting_player_image = pygame.image.load("assets/player/player_supershotgun_shoots.png")
+                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_not_selected.png")
+                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_not_selected.png")
+                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_not_selected.png")
+                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_selected.png")
                 pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
                 shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
                 mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
@@ -282,12 +143,12 @@ while True:
                         shoot_start_time = pygame.time.get_ticks() # Запоминаем время начала выстрела
 
                         # Уменьшение здоровья врага при выстреле и уничтожение
-                        clothest_enemy = find_closest_enemy(player_pos_x)
+                        closest_enemy = enemy.find_closest_enemy(player_pos_x)
                         if on_ground: # Если игрок на земле, он попадает по противникам
-                            if clothest_enemy:
-                                if clothest_enemy.health > 0:
-                                    clothest_enemy.health -= 1
-                                    clothest_enemy.rect.x += 10 # Инерция противника от выстрела
+                            if closest_enemy:
+                                if closest_enemy.health > 0:
+                                    closest_enemy.health -= 1
+                                    closest_enemy.rect.x += 10 # Инерция противника от выстрела
                         else:
                             pass
                 # Обработка если выбран шотган
@@ -300,12 +161,12 @@ while True:
                         shoot_start_time = pygame.time.get_ticks()  # Запоминаем время начала выстрела
 
                         # Уменьшение здоровья врага при выстреле и уничтожение
-                        clothest_enemy = find_closest_enemy(player_pos_x)
+                        closest_enemy = enemy.find_closest_enemy(player_pos_x)
                         if on_ground:  # Если игрок на земле, он попадает по противникам
-                            if clothest_enemy:
-                                if clothest_enemy.health > 0:
-                                    clothest_enemy.health -= 3
-                                    clothest_enemy.rect.x += 30  # Инерция противника от выстрела
+                            if closest_enemy:
+                                if closest_enemy.health > 0:
+                                    closest_enemy.health -= 3
+                                    closest_enemy.rect.x += 30  # Инерция противника от выстрела
                         else:
                             pass
                 # Обработка если выбран MP5
@@ -320,22 +181,22 @@ while True:
                         shoot_last_time = current_time
 
                         # Уменьшение здоровья врага при выстреле и уничтожение
-                        clothest_enemy = find_closest_enemy(player_pos_x)
+                        closest_enemy = enemy.find_closest_enemy(player_pos_x)
                         if on_ground: # Если игрок на земле, он попадает по противникам
-                            if clothest_enemy:
-                                if clothest_enemy.health > 0:
-                                    clothest_enemy.health -= 1.5
-                                    clothest_enemy.rect.x += 20 # Инерция противника от выстрела
+                            if closest_enemy:
+                                if closest_enemy.health > 0:
+                                    closest_enemy.health -= 1.5
+                                    closest_enemy.rect.x += 20 # Инерция противника от выстрела
                         else:
                             pass
                 # Обработка если выбран супершотган (с учетом двух выстрелов с перезарядкой)
                 elif selected_weapon == 'supershotgun':
                     if ammo_supershotgun_left == 2:
-                        player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/supershotgun_single_shoot.wav")
+                        player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/supershotgun_single_shoot.wav")
                         if ammo_supershotgun_left != 2:
                             supershotgun_reload_ping = 100
                     elif ammo_supershotgun_left == 1:
-                        player_shoots_sound = pygame.mixer.Sound("player/sounds/weapons/supershotgun_shoot.wav")
+                        player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/supershotgun_shoot.wav")
                         supershotgun_reload_ping = 100
                     if current_time - shoot_start_time >= supershotgun_reload_ping:
                         player_shoots_sound.play()
@@ -345,12 +206,12 @@ while True:
                         shoot_start_time = current_time  # Запоминаем время начала выстрела
 
                         # Уменьшение здоровья врага при выстреле и уничтожение
-                        clothest_enemy = find_closest_enemy(player_pos_x)
+                        closest_enemy = enemy.find_closest_enemy(player_pos_x)
                         if on_ground:  # Если игрок на земле, он попадает по противникам
-                            if clothest_enemy:
-                                if clothest_enemy.health > 0:
-                                    clothest_enemy.health -= 6
-                                    clothest_enemy.rect.x += 40  # Инерция противника от выстрела
+                            if closest_enemy:
+                                if closest_enemy.health > 0:
+                                    closest_enemy.health -= 6
+                                    closest_enemy.rect.x += 40  # Инерция противника от выстрела
 
                         if ammo_supershotgun_left == 1:
                             supershotgun_reload_ping = 750
@@ -395,9 +256,7 @@ while True:
         player_image = pygame.transform.scale(player_image, player_size)
         player_shooting = False
 
-    # Перемещение фонов для создания иллюзии движения игрока
-    background1_rect.x += player_speed
-    background2_rect.x += player_speed
+    game.background_movement(background1_rect, background2_rect, background_width, player_speed, WIDTH)
 
     # Применение гравитации и инерции к прыжку
     if not on_ground:
@@ -408,28 +267,16 @@ while True:
             player_pos_y = player_on_ground_y
             on_ground = True
 
-    # Проверка, чтобы фоны были бесконечными и повторялись друг за другом, когда заканчивается один из них
-    if background1_rect.right <= 0:
-        background1_rect.x = background2_rect.right
-    elif background2_rect.right <= 0:
-        background2_rect.x = background1_rect.right
-    elif background1_rect.left >= WIDTH:
-        background1_rect.x = background2_rect.left - background_width
-    elif background2_rect.left >= WIDTH:
-        background2_rect.x = background1_rect.left - background_width
-
     # Создание противника с определенной вероятностью
-    if random.randint(1, 50) == 1:
-        enemy = Enemy(background)
-        enemies.add(enemy)
+    enemy.enemy_random_create()
 
     # Обновление позиций противников
-    enemies.update()
+    enemy.enemy_position_update()
 
     # Отрисовка фонов и объектов
     screen.blit(background, background1_rect)
     screen.blit(background, background2_rect)
-    enemies.draw(screen)
+    enemy.enemies.draw(screen)
     # weapons_bar
     screen.blit(pistol_icon_on_bar, pistol_icon_on_bar_rect)
     screen.blit(shotgun_icon_on_bar, shotgun_icon_on_bar_rect)
@@ -479,16 +326,16 @@ while True:
 
     # Анимация стойки игрока
     if current_time - last_frame_change_time_stands >= 300 and on_ground:
-        if player_image_player_stands_path == "player\player_stands_1.png":
+        if player_image_player_stands_path == "assets/player/player_stands_1.png":
             player_image = pygame.image.load(player_image_player_stands_path)
             player_image = pygame.transform.scale(player_image, player_size)
             last_frame_change_time_stands = current_time
-            player_image_player_stands_path = "player\player_stands_2.png"
+            player_image_player_stands_path = "assets/player/player_stands_2.png"
         else:
             player_image = pygame.image.load(player_image_player_stands_path)
             player_image = pygame.transform.scale(player_image, player_size)
             last_frame_change_time_stands = current_time
-            player_image_player_stands_path = "player\player_stands_1.png"
+            player_image_player_stands_path = "assets/player/player_stands_1.png"
 
     # Обновление экрана после отрисовки объектов
     pygame.display.flip()
