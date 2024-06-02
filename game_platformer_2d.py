@@ -268,10 +268,10 @@ while True:
             on_ground = True
 
     # Создание противника с определенной вероятностью
-    enemy.enemy_random_create()
+    enemy_var = enemy.enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed)
 
     # Обновление позиций противников
-    enemy.enemy_position_update()
+    enemy.enemy_position_update(enemy_var, player_speed, enemy_size)
 
     # Отрисовка фонов и объектов
     screen.blit(background, background1_rect)
