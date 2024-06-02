@@ -16,7 +16,7 @@ def set_enemy_sounds():
 
 # Класс противника
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed):
+    def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound):
         super().__init__()
         self.image = enemy_sprite
         self.image = pygame.transform.scale(enemy_sprite, enemy_size)
@@ -46,7 +46,7 @@ class Enemy(pygame.sprite.Sprite):
         self.death_sound_active = False
 
     # Функция постоянного обновления состояния противника
-    def update(self, player_speed, enemy_size):
+    def update(self, player_speed, enemy_size, enemy_dies_sound):
         self.rect.x -= self.speed - player_speed # Движение противника на игрока
         # Если противник (живой либо уничтоженный) уходит за левый край на -100 по x, то он исчезает
         if self.rect.right <= -100:
@@ -108,15 +108,15 @@ def find_closest_enemy(player_pos_x):
 
 
 # Создание противника с определенной вероятностью
-def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed):
+def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound):
     if random.randint(1, 50) == 1:
-        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed)
+        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound)
         enemies.add(enemy_var)
     else:
         enemy_var = None
     return enemy_var
 
 # Обновление позиций противников
-def enemy_position_update(enemy_var, player_speed, enemy_size):
+def enemy_position_update(enemy_var, player_speed, enemy_size, enemy_dies_sound):
     if enemy_var != None:
-        enemies.update(player_speed, enemy_size)
+        enemies.update(player_speed, enemy_size, enemy_dies_sound)
