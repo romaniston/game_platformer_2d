@@ -118,5 +118,4 @@ def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_g
 
 # Обновление позиций противников
 def enemy_position_update(enemy_var, player_speed, enemy_size, enemy_dies_sound):
-    if enemy_var != None:
-        enemies.update(player_speed, enemy_size, enemy_dies_sound)
+    enemies.update(player_speed, enemy_size, enemy_dies_sound)

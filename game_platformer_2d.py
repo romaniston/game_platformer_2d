@@ -53,16 +53,6 @@ while True:
             pygame.quit()
             sys.exit()
 
-        # # Словарь состояния клавиш клавиатуры в нажатом состоянии
-        # keys = pygame.key.get_pressed()
-        #
-        # # Обработка зажатия кнопки выстрела при автоматической стрельбе
-        # if keys[pygame.K_SPACE]:
-        #     shoot_button_pressed = True
-        #     print(shoot_button_pressed)
-        # else:
-        #     shoot_button_pressed = False
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
                 player_speed = speed_val
@@ -233,8 +223,6 @@ while True:
         player_runs_sound.stop()
         is_running_sound_playing = False
 
-
-
     # Получение обновляемого текущего времени
     current_time = pygame.time.get_ticks()
 
@@ -256,6 +244,7 @@ while True:
         player_image = pygame.transform.scale(player_image, player_size)
         player_shooting = False
 
+    # Перемещение фонов для создания иллюзии движения игрока
     game.background_movement(background1_rect, background2_rect, background_width, player_speed, WIDTH)
 
     # Применение гравитации и инерции к прыжку
