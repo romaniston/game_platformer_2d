@@ -31,7 +31,7 @@ player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_spe
 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect,\
         mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect,\
-        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect = weapon.weapons_bar_parameters()
+        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect = weapon.weapons_bar("pistol")
 
 # Установка звуковых эффектов
 player_shoots_sound, player_jumps_sound, player_runs_sound = player.set_player_sounds()
@@ -66,60 +66,16 @@ while True:
 
             # Выбор оружия
             elif event.key == pygame.K_1:
-                selected_weapon = 'pistol'
-                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/pistol_shoot.wav")
-                shooting_player_image =pygame.image.load("assets/player/player_pistol_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_not_selected.png")
-                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_not_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_not_selected.png")
-                pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
-                shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
-                mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
-                supershotgun_icon_on_bar = pygame.transform.scale(supershotgun_icon_on_bar,
-                                                                  supershotgun_icon_on_bar_size)
+                weapon.weapons_bar("pistol")
                 selected_weapon_sound.play()
             elif event.key == pygame.K_2:
-                selected_weapon = 'shotgun'
-                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/shotgun_shoot.wav")
-                shooting_player_image = pygame.image.load("assets/player/player_shotgun_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_not_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_selected.png")
-                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_not_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_not_selected.png")
-                pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
-                shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
-                mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
-                supershotgun_icon_on_bar = pygame.transform.scale(supershotgun_icon_on_bar,
-                                                                  supershotgun_icon_on_bar_size)
+                weapon.weapons_bar("shotgun")
                 selected_weapon_sound.play()
             elif event.key == pygame.K_3:
-                selected_weapon = 'mp5'
-                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/mp5_shoot.wav")
-                shooting_player_image = pygame.image.load("assets/player/player_mp5_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_not_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_not_selected.png")
-                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_not_selected.png")
-                pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
-                shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
-                mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
-                supershotgun_icon_on_bar = pygame.transform.scale(supershotgun_icon_on_bar,
-                                                                  supershotgun_icon_on_bar_size)
+                weapon.weapons_bar("mp5")
                 selected_weapon_sound.play()
             elif event.key == pygame.K_4:
-                selected_weapon = 'supershotgun'
-                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/supershotgun_shoot.wav")
-                shooting_player_image = pygame.image.load("assets/player/player_supershotgun_shoots.png")
-                pistol_icon_on_bar = pygame.image.load("assets/weapons_bar/pistol_not_selected.png")
-                shotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/shotgun_not_selected.png")
-                mp5_icon_on_bar = pygame.image.load("assets/weapons_bar/mp5_not_selected.png")
-                supershotgun_icon_on_bar = pygame.image.load("assets/weapons_bar/supershotgun_selected.png")
-                pistol_icon_on_bar = pygame.transform.scale(pistol_icon_on_bar, pistol_icon_on_bar_size)
-                shotgun_icon_on_bar = pygame.transform.scale(shotgun_icon_on_bar, shotgun_icon_on_bar_size)
-                mp5_icon_on_bar = pygame.transform.scale(mp5_icon_on_bar, mp5_icon_on_bar_size)
-                supershotgun_icon_on_bar = pygame.transform.scale(supershotgun_icon_on_bar,
-                                                                  supershotgun_icon_on_bar_size)
+                weapon.weapons_bar("supershotgun")
                 selected_weapon_sound.play()
             # Выстрел
             elif event.key == pygame.K_SPACE:
