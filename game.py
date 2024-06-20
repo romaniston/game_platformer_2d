@@ -44,3 +44,19 @@ def background_movement(background1_rect, background2_rect, background_width, pl
         background1_rect.x = background2_rect.left - background_width
     elif background2_rect.left >= WIDTH:
         background2_rect.x = background1_rect.left - background_width
+
+# Отрисовка фонов и объектов
+def drawing_objects(screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,
+                    shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,
+                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, enemy):
+    screen.blit(background, background1_rect)
+    screen.blit(background, background2_rect)
+    enemy.enemies.draw(screen)
+    # weapons_bar
+    screen.blit(pistol_icon_on_bar, pistol_icon_on_bar_rect)
+    screen.blit(shotgun_icon_on_bar, shotgun_icon_on_bar_rect)
+    screen.blit(mp5_icon_on_bar, mp5_icon_on_bar_rect)
+    screen.blit(supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect)
+    return screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,\
+                    shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,\
+                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, enemy
