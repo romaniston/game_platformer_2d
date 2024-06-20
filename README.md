@@ -1,6 +1,5 @@
 # game_platformer_2d
- Игра платформер по мотивам DOOM на PyGame
- A platformer game based on DOOM on PyGame
+A platformer game based on DOOM on PyGame
 ________________________________
 Управление:
 W, A, D - ходьба и прыжок.
