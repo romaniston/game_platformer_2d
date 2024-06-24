@@ -50,11 +50,12 @@ def set_player_sounds():
 def player_walks_sound(on_ground, player_speed, is_running_sound_playing, player_runs_sound):
     if on_ground and (player_speed != 0):
         if not is_running_sound_playing:
-            player_runs_sound.play()
+            player_runs_sound.play(-1)
             is_running_sound_playing = True
     elif (player_speed == 0) or (not on_ground):
         player_runs_sound.stop()
         is_running_sound_playing = False
+    return is_running_sound_playing
 
 # Увеличение скорости игрока при прыжке
 def increase_speed_when_player_jump(on_ground, player_speed, speed_val):

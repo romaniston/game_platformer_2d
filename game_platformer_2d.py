@@ -172,7 +172,7 @@ while True:
                 player_runs_sound.stop()
 
     # Воспроизведение звука бега, если игрок находится на земле и движется
-    player.player_walks_sound(on_ground, player_speed, is_running_sound_playing, player_runs_sound)
+    is_running_sound_playing = player.player_walks_sound(on_ground, player_speed, is_running_sound_playing, player_runs_sound)
 
     # Получение обновляемого текущего времени
     current_time = pygame.time.get_ticks()
