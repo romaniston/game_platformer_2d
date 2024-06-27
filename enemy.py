@@ -24,8 +24,7 @@ def set_enemy_sounds(who_is):
 
 # Класс противника
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound,
-                 who_is):
+    def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound, who_is):
         super().__init__()
         self.image = enemy_sprite
         self.image = pygame.transform.scale(enemy_sprite, enemy_size)
@@ -38,10 +37,12 @@ class Enemy(pygame.sprite.Sprite):
             self.speed = random.randint(3, 6) # Случайная скорость
         self.background = background
 
+        self.enemy_dies_sound = enemy_dies_sound
+        self.who_is = who_is
+
         # Загружаем анимации противника
         # Список изображений для анимации уничтожения
         self.death_images = []
-
         # Подсчет числа спрайтов относительно выбранного негодника
         if who_is == 'imp':
             sprite_count = {'death': 6, 'walks': 4}
@@ -64,10 +65,11 @@ class Enemy(pygame.sprite.Sprite):
         if who_is == 'pinky':
             self.health = 8 # Здоровье
         self.is_alive = True # Флаг жив ли противник
+
         self.death_sound_active = False
 
     # Функция постоянного обновления состояния противника
-    def update(self, player_speed, enemy_size, enemy_dies_sound_imp, enemy_dies_sound_pinky):
+    def update(self, player_speed, enemy_size):
         self.rect.x -= self.speed - player_speed # Движение противника на игрока
         # Если противник (живой либо уничтоженный) уходит за левый край на -100 по x, то он исчезает
         if self.rect.right <= -100:
@@ -94,7 +96,7 @@ class Enemy(pygame.sprite.Sprite):
                     self.death_index += 1
                     self.death_timer = 0
                     if not self.death_sound_active:
-                        enemy_dies_sound_imp.play()
+                        self.enemy_dies_sound.play()
                         self.death_sound_active = True
             else:
                 self.speed = 0
@@ -130,10 +132,10 @@ def find_closest_enemy(player_pos_x):
 
 # Создание противника с определенной вероятностью
 def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, enemy_dies_sound_pinky):
-    if random.randint(1, 50) == 1:
+    if random.randint(1, 100) == 1:
         enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, 'imp')
         enemies.add(enemy_var)
-    elif random.randint(1, 100) == 2:
+    elif random.randint(1, 200) == 2:
         enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_pinky, 'pinky')
         enemies.add(enemy_var)
     else:
@@ -141,5 +143,5 @@ def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_g
     return enemy_var
 
 # Обновление позиций противников
-def enemy_position_update(enemy_var, player_speed, enemy_size, enemy_dies_sound_imp, enemy_dies_sound_pinky):
-    enemies.update(player_speed, enemy_size, enemy_dies_sound_imp, enemy_dies_sound_pinky)
+def enemy_position_update(enemy_var, player_speed, enemy_size):
+    enemies.update(player_speed, enemy_size)

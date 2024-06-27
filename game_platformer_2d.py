@@ -199,9 +199,9 @@ while True:
                                           player_on_ground_y, player_speed, enemy_dies_sound_imp, enemy_dies_sound_pinky)
 
     # Обновление позиций противников
-    enemy.enemy_position_update(enemy_var, player_speed, enemy_size, enemy_dies_sound_imp, enemy_dies_sound_pinky)
+    enemy.enemy_position_update(enemy_var, player_speed, enemy_size)
 
-    # Отрисовка объектов
+    # Отрисовка объектовц
     screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,\
             shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,\
             supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, enemy =\
