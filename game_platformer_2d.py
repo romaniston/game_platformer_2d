@@ -15,7 +15,7 @@ background, background_rect, background_width, background1_rect, background2_rec
     game.set_backrounds("assets/background/background.jpg")
 
 # Установка и запуск фоновой музыки
-game.set_background_music("assets/background/background_music.mp3")
+# game.set_background_music("assets/background/background_music.mp3")
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
@@ -24,7 +24,7 @@ player_image_player_stands_path, player_image, player_size, player_image, player
 
 # Установка спрайтов врагов
 enemy_sprite_path, enemy_sprite, enemy_size =\
-    enemy.set_enemy_sprites()
+    enemy.set_enemy_sprites('imp')
 
 # Установка параметров игрока
 player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_speed, on_ground, \
@@ -42,7 +42,9 @@ pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
 
 # Установка звуковых эффектов
 player_shoots_sound, player_jumps_sound, player_runs_sound = player.set_player_sounds()
-enemy_dies_sound = enemy.set_enemy_sounds()
+enemy_dies_sound_imp = enemy.set_enemy_sounds('imp')
+enemy_dies_sound_pinky = enemy.set_enemy_sounds('pinky')
+
 selected_weapon_sound = weapon.set_selected_weapon_sounds()
 
 # Переменные для отслеживания времени смены кадров анимации
@@ -194,10 +196,10 @@ while True:
 
     # Создание противника с определенной вероятностью
     enemy_var = enemy.enemy_random_create(background, enemy_sprite, enemy_size, WIDTH,
-                                          player_on_ground_y, player_speed, enemy_dies_sound)
+                                          player_on_ground_y, player_speed, enemy_dies_sound_imp, enemy_dies_sound_pinky)
 
     # Обновление позиций противников
-    enemy.enemy_position_update(enemy_var, player_speed, enemy_size, enemy_dies_sound)
+    enemy.enemy_position_update(enemy_var, player_speed, enemy_size, enemy_dies_sound_imp, enemy_dies_sound_pinky)
 
     # Отрисовка объектов
     screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,\
