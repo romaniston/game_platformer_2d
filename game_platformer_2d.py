@@ -61,7 +61,8 @@ while True:
     shooting_button_pressed = False
 
     # Стрельба из автоматического оружия
-    shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size, shoot_last_time, on_ground =\
+    shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
+        shooting_player_image, player_size, shoot_last_time, on_ground =\
         weapon.auto_gun_shooting(selected_weapon, 125, 1.5, 20, shoot_button_pressed, current_time, shoot_start_time,
                                  player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
                                  shoot_last_time, on_ground, player_pos_x)
