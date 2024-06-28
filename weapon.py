@@ -47,9 +47,38 @@ def set_selected_weapon_sounds():
     selected_weapon_sound = pygame.mixer.Sound("assets/player/sounds/weapons/select_weapon.mp3")
     return selected_weapon_sound
 
+def auto_gun_shooting(selected_weapon, ping, damage, inertion, shoot_button_pressed, current_time, shoot_start_time,
+                      player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
+                      shoot_last_time, on_ground, player_pos_x):
+    keys = pygame.key.get_pressed()
+    # Обработка зажатия кнопки выстрела при автоматической стрельбе
+    if keys[pygame.K_SPACE] and selected_weapon in ["mp5"]:
+        shoot_button_pressed = True
+        print(shoot_button_pressed)
+        if current_time - shoot_start_time >= ping:
+            player_shoots_sound.play()
+            player_shooting = True
+            player_image = shooting_player_image
+            player_image = pygame.transform.scale(player_image, player_size)
+            shoot_start_time = current_time  # Запоминаем время начала выстрела
+            shoot_last_time = current_time
+            print(123)
+
+            # Уменьшение здоровья врага при выстреле и уничтожение
+            closest_enemy = enemy.find_closest_enemy(player_pos_x)
+            if on_ground:  # Если игрок на земле, он попадает по противникам
+                if closest_enemy:
+                    if closest_enemy.health > 0:
+                        closest_enemy.health -= damage
+                        closest_enemy.rect.x += inertion  # Инерция противника от выстрела
+    else:
+        shoot_button_pressed = False
+    return shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
+        shooting_player_image, player_size, shoot_last_time, on_ground
+
 def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting,
                                player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,
-                               ammo_supershotgun_left, supershotgun_reload_ping):
+                               ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed):
     if selected_weapon == 'pistol':
         if current_time - shoot_start_time >= 150:
             player_shoots_sound.play()
@@ -87,21 +116,8 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
                 pass
 
     elif selected_weapon == 'mp5':
-        if current_time - shoot_start_time >= 100:
-            player_shoots_sound.play()
-            player_shooting = True
-            player_image = shooting_player_image
-            player_image = pygame.transform.scale(player_image, player_size)
-            shoot_start_time = current_time  # Запоминаем время начала выстрела
-            shoot_last_time = current_time
-
-            # Уменьшение здоровья врага при выстреле и уничтожение
-            closest_enemy = enemy.find_closest_enemy(player_pos_x)
-            if on_ground:  # Если игрок на земле, он попадает по противникам
-                if closest_enemy:
-                    if closest_enemy.health > 0:
-                        closest_enemy.health -= 1.5
-                        closest_enemy.rect.x += 20  # Инерция противника от выстрела
+        while shoot_button_pressed:
+            pass
 
     elif selected_weapon == 'supershotgun':
         if ammo_supershotgun_left == 2:
@@ -123,7 +139,7 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             if on_ground:  # Если игрок на земле, он попадает по противникам
                 if closest_enemy:
                     if closest_enemy.health > 0:
-                        closest_enemy.health -= 6
+                        closest_enemy.health -= 10
                         closest_enemy.rect.x += 40  # Инерция противника от выстрела
 
             if ammo_supershotgun_left == 1:
@@ -136,7 +152,7 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
         pass
     return selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting,\
         player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
-        ammo_supershotgun_left, supershotgun_reload_ping
+        ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed
 
     # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт player_stands
 def shot_image_ping(current_time, shoot_start_time, player_image, player_image_player_stands_path, player_size,

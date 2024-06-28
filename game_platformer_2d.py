@@ -56,6 +56,16 @@ current_time = pygame.time.get_ticks()
 
 # Игровой цикл
 while True:
+
+    # Словарь состояния клавиш клавиатуры в нажатом состоянии
+    shooting_button_pressed = False
+
+    # Стрельба из автоматического оружия
+    shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size, shoot_last_time, on_ground =\
+        weapon.auto_gun_shooting(selected_weapon, 125, 1.5, 20, shoot_button_pressed, current_time, shoot_start_time,
+                                 player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
+                                 shoot_last_time, on_ground, player_pos_x)
+
     # Обработка событий
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -131,42 +141,42 @@ while True:
                 if selected_weapon == 'pistol':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
                             player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
-                            ammo_supershotgun_left, supershotgun_reload_ping =\
+                            ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed =\
                         weapon.selected_weapon_parameters(selected_weapon, current_time, shoot_start_time,
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping)
+                                                          supershotgun_reload_ping, shoot_button_pressed)
 
                 elif selected_weapon == 'shotgun':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
                             player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
-                            ammo_supershotgun_left, supershotgun_reload_ping =\
+                            ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed =\
                         weapon.selected_weapon_parameters(selected_weapon, current_time, shoot_start_time,
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping)
+                                                          supershotgun_reload_ping, shoot_button_pressed)
 
                 elif selected_weapon == 'mp5':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
                             player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
-                            ammo_supershotgun_left, supershotgun_reload_ping =\
+                            ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed =\
                         weapon.selected_weapon_parameters(selected_weapon, current_time, shoot_start_time,
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping)
+                                                          supershotgun_reload_ping, shoot_button_pressed)
 
                 elif selected_weapon == 'supershotgun':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
                             player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
-                            ammo_supershotgun_left, supershotgun_reload_ping =\
+                            ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed =\
                         weapon.selected_weapon_parameters(selected_weapon, current_time, shoot_start_time,
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping)
+                                                          supershotgun_reload_ping, shoot_button_pressed)
 
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_a, pygame.K_d):
