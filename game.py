@@ -1,6 +1,8 @@
-import pygame
 import sys
 import random
+
+import pygame
+
 
 # Ставим экран с резолюшином
 def set_screen_resolution(WIDTH, HEIGHT):
@@ -48,7 +50,8 @@ def background_movement(background1_rect, background2_rect, background_width, pl
 # Отрисовка фонов и объектов
 def drawing_objects(screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,
                     shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,
-                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, enemy):
+                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar,
+                    machine_gun_icon_on_bar_rect, enemy):
     screen.blit(background, background1_rect)
     screen.blit(background, background2_rect)
     enemy.enemies.draw(screen)
@@ -57,6 +60,8 @@ def drawing_objects(screen, background, background1_rect, background2_rect, pist
     screen.blit(shotgun_icon_on_bar, shotgun_icon_on_bar_rect)
     screen.blit(mp5_icon_on_bar, mp5_icon_on_bar_rect)
     screen.blit(supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect)
-    return screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,\
+    screen.blit(machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect)
+    return (screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,\
                     shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,\
-                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, enemy
+                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar,\
+                    machine_gun_icon_on_bar_rect, enemy)

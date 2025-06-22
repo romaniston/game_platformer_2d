@@ -1,6 +1,8 @@
-import pygame
 import sys
 import random
+
+import pygame
+
 
 # Установка спрайтов врагов
 def set_enemy_sprites(who_is):
@@ -101,8 +103,10 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 self.speed = 0
 
+
 # Создание группы для противников для отрисовки всех противников одновременно
 enemies = pygame.sprite.Group()
+
 
 # Функция для определения самого ближайшего живого противника к игроку
 def find_closest_enemy(player_pos_x):
@@ -125,17 +129,31 @@ def find_closest_enemy(player_pos_x):
     return closest_enemy
 
 
+def find_n_closest_enemies(player_x, enemies, n=3):
+    enemies_with_distance = []
+    for enemy in enemies:
+        if not enemy.is_alive: # Если противник убит, исключаем его из цикла
+            continue
+        else:
+            for enemy in enemies:
+                distance = abs(enemy.rect.centerx - player_x)
+                if enemy.health <= 0:
+                    pass
+                else:
+                    enemies_with_distance.append((distance, enemy))
+            enemies_with_distance.sort(key=lambda x: x[0])  # сортируем по расстоянию
+            return [enemy for _, enemy in enemies_with_distance[:n]]  # возвращаем только объекты врагов
+
 
 # VVV Игровой цикл VVV
 
 
-
 # Создание противника с определенной вероятностью
 def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, enemy_dies_sound_pinky):
-    if random.randint(1, 100) == 1:
+    if random.randint(1, 50) == 1:
         enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, 'imp')
         enemies.add(enemy_var)
-    elif random.randint(1, 200) == 2:
+    elif random.randint(1, 25) == 2:
         enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_pinky, 'pinky')
         enemies.add(enemy_var)
     else:

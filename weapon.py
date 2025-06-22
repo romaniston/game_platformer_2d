@@ -1,7 +1,11 @@
-import pygame
 import sys
 import random
+from logging import exception
+
+import pygame
+
 import enemy
+
 
 # weapons_bar (панель выбора оружия)
 def weapons_bar(selected_weapon):
@@ -37,10 +41,20 @@ def weapons_bar(selected_weapon):
     supershotgun_icon_on_bar = pygame.transform.scale(supershotgun_icon_on_bar, shotgun_icon_on_bar_size)
     supershotgun_icon_on_bar_rect = supershotgun_icon_on_bar.get_rect()
     supershotgun_icon_on_bar_rect.x = 240
+    if selected_weapon == "machine_gun":
+        machine_gun_icon_on_bar = pygame.image.load("assets/weapons_bar/machine_gun_selected.png")
+    else:
+        machine_gun_icon_on_bar = pygame.image.load("assets/weapons_bar/machine_gun_not_selected.png")
+    machine_gun_icon_on_bar_size = (80, 70)
+    machine_gun_icon_on_bar = pygame.transform.scale(machine_gun_icon_on_bar, shotgun_icon_on_bar_size)
+    machine_gun_icon_on_bar_rect = machine_gun_icon_on_bar.get_rect()
+    machine_gun_icon_on_bar_rect.x = 320
     return pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
                     shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
                     mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect, \
-                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect
+                    supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect, \
+                    machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect
+
 
 # Установка звука выбора оружия
 def set_selected_weapon_sounds():
@@ -52,7 +66,7 @@ def auto_gun_shooting(selected_weapon, ping, damage, inertion, shoot_button_pres
                       shoot_last_time, on_ground, player_pos_x):
     keys = pygame.key.get_pressed()
     # Обработка зажатия кнопки выстрела при автоматической стрельбе
-    if keys[pygame.K_SPACE] and selected_weapon in ["mp5"]:
+    if keys[pygame.K_SPACE] and selected_weapon in ["mp5", "machine_gun"]:
         shoot_button_pressed = True
         print(shoot_button_pressed)
         if current_time - shoot_start_time >= ping:
@@ -115,7 +129,7 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             else:
                 pass
 
-    elif selected_weapon == 'mp5':
+    elif selected_weapon == 'mp5' or 'machine_gun':
         while shoot_button_pressed:
             pass
 
@@ -135,12 +149,16 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             shoot_start_time = current_time  # Запоминаем время начала выстрела
 
             # Уменьшение здоровья врага при выстреле и уничтожение
-            closest_enemy = enemy.find_closest_enemy(player_pos_x)
-            if on_ground:  # Если игрок на земле, он попадает по противникам
-                if closest_enemy:
-                    if closest_enemy.health > 0:
-                        closest_enemy.health -= 10
-                        closest_enemy.rect.x += 40  # Инерция противника от выстрела
+            enemies = enemy.enemies
+            if on_ground:
+                closest_enemies = enemy.find_n_closest_enemies(player_pos_x, enemies, n=3)
+                try:
+                    for enemy_obj in closest_enemies:
+                        if enemy_obj.health > 0:
+                            enemy_obj.health -= 10
+                            enemy_obj.rect.x += 40
+                except TypeError:
+                    pass
 
             if ammo_supershotgun_left == 1:
                 supershotgun_reload_ping = 750

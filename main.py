@@ -1,7 +1,10 @@
-import pygame
 import sys
 import random
+
+import pygame
+
 import game, player, enemy, weapon
+
 
 # Инициализация Pygame
 pygame.init()
@@ -37,7 +40,8 @@ player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_spe
 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect,\
         mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect,\
-        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect =\
+        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect,\
+        machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect =\
     weapon.weapons_bar("pistol")
 
 # Установка звуковых эффектов
@@ -61,11 +65,21 @@ while True:
     shooting_button_pressed = False
 
     # Стрельба из автоматического оружия
-    shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
-        shooting_player_image, player_size, shoot_last_time, on_ground =\
-        weapon.auto_gun_shooting(selected_weapon, 125, 1.5, 20, shoot_button_pressed, current_time, shoot_start_time,
-                                 player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
-                                 shoot_last_time, on_ground, player_pos_x)
+    if selected_weapon == 'mp5':
+        shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
+            shooting_player_image, player_size, shoot_last_time, on_ground =\
+                weapon.auto_gun_shooting(selected_weapon, 125, 1.5, 20, shoot_button_pressed, current_time,
+                                         shoot_start_time,
+                                         player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
+                                         shoot_last_time, on_ground, player_pos_x)
+    elif selected_weapon == 'machine_gun':
+        shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
+            shooting_player_image, player_size, shoot_last_time, on_ground =\
+                weapon.auto_gun_shooting(selected_weapon, 100, 5, 75, shoot_button_pressed, current_time,
+                                         shoot_start_time,
+                                         player_shoots_sound, player_shooting, player_image, shooting_player_image,
+                                         player_size,
+                                         shoot_last_time, on_ground, player_pos_x)
 
     # Обработка событий
     for event in pygame.event.get():
@@ -93,7 +107,8 @@ while True:
                 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
                         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
                         mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect, \
-                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect =\
+                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect, \
+                        machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect =\
                     weapon.weapons_bar("pistol")
 
                 selected_weapon_sound.play()
@@ -106,7 +121,8 @@ while True:
                 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
                         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
                         mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect, \
-                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect =\
+                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect, \
+                        machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect =\
                     weapon.weapons_bar("shotgun")
 
                 selected_weapon_sound.play()
@@ -119,7 +135,8 @@ while True:
                 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
                         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
                         mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect, \
-                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect =\
+                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect, \
+                        machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect =\
                     weapon.weapons_bar("mp5")
 
                 selected_weapon_sound.play()
@@ -132,8 +149,23 @@ while True:
                 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
                         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
                         mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect, \
-                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect =\
+                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect, \
+                        machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect =\
                     weapon.weapons_bar("supershotgun")
+
+                selected_weapon_sound.play()
+
+            elif event.key == pygame.K_5:
+                selected_weapon = 'machine_gun'
+                player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/machine_gun_shoot.wav")
+                shooting_player_image = pygame.image.load("assets/player/player_supershotgun_shoots.png")
+
+                pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
+                        shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
+                        mp5_icon_on_bar, mp5_icon_on_bar_size, mp5_icon_on_bar_rect, \
+                        supershotgun_icon_on_bar, supershotgun_icon_on_bar_size, supershotgun_icon_on_bar_rect, \
+                        machine_gun_icon_on_bar, machine_gun_icon_on_bar_size, machine_gun_icon_on_bar_rect =\
+                    weapon.weapons_bar("machine_gun")
 
                 selected_weapon_sound.play()
 
@@ -179,6 +211,16 @@ while True:
                                                           shoot_last_time, ammo_supershotgun_left,
                                                           supershotgun_reload_ping, shoot_button_pressed)
 
+                elif selected_weapon == 'machine_gun':
+                    selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
+                            player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
+                            ammo_machine_gun_left, machine_gun_reload_ping, shoot_button_pressed =\
+                        weapon.selected_weapon_parameters(selected_weapon, current_time, shoot_start_time,
+                                                          player_shoots_sound, player_shooting, player_image,
+                                                          shooting_player_image, on_ground, player_size, player_pos_x,
+                                                          shoot_last_time, ammo_supershotgun_left,
+                                                          supershotgun_reload_ping, shoot_button_pressed)
+
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_a, pygame.K_d):
                 player_speed = 0
@@ -192,6 +234,7 @@ while True:
 
     # Увеличение скорости игрока при прыжке
     player_speed = player.increase_speed_when_player_jump(on_ground, player_speed, speed_val)
+
 
     # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт player_stands
     shoot_start_time, player_image, player_image_player_stands_path, player_size, player_shooting =\
@@ -212,14 +255,16 @@ while True:
     # Обновление позиций противников
     enemy.enemy_position_update(enemy_var, player_speed, enemy_size)
 
-    # Отрисовка объектовц
-    screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,\
-            shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,\
-            supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, enemy =\
+    # Отрисовка объектов
+    (screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,
+            shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,
+            supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar,
+            machine_gun_icon_on_bar_rect, enemy) =\
         game.drawing_objects(screen, background, background1_rect, background2_rect, pistol_icon_on_bar,
                              pistol_icon_on_bar_rect, shotgun_icon_on_bar, shotgun_icon_on_bar_rect,
                              mp5_icon_on_bar, mp5_icon_on_bar_rect, supershotgun_icon_on_bar,
-                             supershotgun_icon_on_bar_rect, enemy)
+                             supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect,
+                             enemy)
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\

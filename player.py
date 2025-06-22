@@ -1,6 +1,8 @@
-import pygame
 import sys
 import random
+
+import pygame
+
 
 # Установка спрайтов игрока
 def set_player_sprites():
@@ -12,6 +14,7 @@ def set_player_sprites():
     player_size_walks = (200, 100)
     player_walks = [pygame.transform.scale(img, player_size_walks) for img in player_walks]
     return player_image_player_stands_path, player_image, player_size, player_image, player_walks, player_size_walks, player_walks
+
 
 # Установка параметров игрока
 def set_player_parameters():
@@ -39,12 +42,14 @@ def set_player_parameters():
         speed_val, selected_weapon, shooting_player_image, shoot_button_pressed, ammo_supershotgun_left,\
         supershotgun_reload_ping
 
+
 # Установка звуков игрока
 def set_player_sounds():
     player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/pistol_shoot.wav")
     player_jumps_sound = pygame.mixer.Sound("assets/player/sounds/player_jumps.wav")
     player_runs_sound = pygame.mixer.Sound("assets/player/sounds/player_runs_1.wav")
     return player_shoots_sound, player_jumps_sound, player_runs_sound
+
 
 # Воспроизведение звука бега, если игрок находится на земле и движется
 def player_walks_sound(on_ground, player_speed, is_running_sound_playing, player_runs_sound):
@@ -57,9 +62,17 @@ def player_walks_sound(on_ground, player_speed, is_running_sound_playing, player
         is_running_sound_playing = False
     return is_running_sound_playing
 
+
 # Увеличение скорости игрока при прыжке
 def increase_speed_when_player_jump(on_ground, player_speed, speed_val):
+    keys = pygame.key.get_pressed()
+
     if not on_ground:
+        if player_speed > 0:
+            player_speed = speed_val + 5
+        if player_speed < 0:
+            player_speed = speed_val - 15
+    elif keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT] and on_ground:
         if player_speed > 0:
             player_speed = speed_val + 5
         if player_speed < 0:
@@ -71,6 +84,7 @@ def increase_speed_when_player_jump(on_ground, player_speed, speed_val):
             player_speed = - speed_val
     return player_speed
 
+
 # Применение гравитации и инерции к прыжку игрока
 def player_jump(on_ground, player_pos_y, jump_speed, gravity, player_on_ground_y):
     if not on_ground:
@@ -81,7 +95,6 @@ def player_jump(on_ground, player_pos_y, jump_speed, gravity, player_on_ground_y
             player_pos_y = player_on_ground_y
             on_ground = True
     return on_ground, player_pos_y, jump_speed, gravity, player_on_ground_y
-
 
 
 # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
@@ -111,6 +124,7 @@ def player_walks(player_speed, player_shooting, player_image, shooting_player_im
     return player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\
                  player_pos_y, on_ground, player_walks, current_walk_frame, screen
 
+
 # Замена спрайта игрока в прыжке на player_stands
 def set_sprite_while_jumping(on_ground, player_shooting, player_image_player_stands_path, player_image,
                              player_size, screen, player_pos_x, player_pos_y):
@@ -124,6 +138,7 @@ def set_sprite_while_jumping(on_ground, player_shooting, player_image_player_sta
     return on_ground, player_shooting, player_image_player_stands_path, player_image,\
                              player_size, screen, player_pos_x, player_pos_y
 
+
 # Изменение current_walk_frame каждые 100 млс
 def player_walking(last_frame_change_time, player_speed, current_walk_frame, player_walks, current_time):
     if current_time - last_frame_change_time >= 100:  # Переключение кадров player_walks каждые 0.1 секунды
@@ -134,6 +149,7 @@ def player_walking(last_frame_change_time, player_speed, current_walk_frame, pla
             current_walk_frame = (current_walk_frame - 1) % len(player_walks)
             last_frame_change_time = current_time
     return last_frame_change_time, player_speed, current_walk_frame, player_walks
+
 
 # Анимация стойки игрока
 def player_staying_and_breating_animation(current_time, last_frame_change_time_stands, on_ground, player_image_player_stands_path,
