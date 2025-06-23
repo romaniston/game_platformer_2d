@@ -48,6 +48,7 @@ pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
 player_shoots_sound, player_jumps_sound, player_runs_sound = player.set_player_sounds()
 enemy_dies_sound_imp = enemy.set_enemy_sounds('imp')
 enemy_dies_sound_pinky = enemy.set_enemy_sounds('pinky')
+enemy_dies_sound_baron = enemy.set_enemy_sounds('baron')
 
 selected_weapon_sound = weapon.set_selected_weapon_sounds()
 
@@ -214,7 +215,7 @@ while True:
                 elif selected_weapon == 'machine_gun':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
                             player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
-                            ammo_machine_gun_left, machine_gun_reload_ping, shoot_button_pressed =\
+                            ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed =\
                         weapon.selected_weapon_parameters(selected_weapon, current_time, shoot_start_time,
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
@@ -235,7 +236,6 @@ while True:
     # Увеличение скорости игрока при прыжке
     player_speed = player.increase_speed_when_player_jump(on_ground, player_speed, speed_val)
 
-
     # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт player_stands
     shoot_start_time, player_image, player_image_player_stands_path, player_size, player_shooting =\
         weapon.shot_image_ping(current_time, shoot_start_time, player_image, player_image_player_stands_path,
@@ -250,7 +250,8 @@ while True:
 
     # Создание противника с определенной вероятностью
     enemy_var = enemy.enemy_random_create(background, enemy_sprite, enemy_size, WIDTH,
-                                          player_on_ground_y, player_speed, enemy_dies_sound_imp, enemy_dies_sound_pinky)
+                                          player_on_ground_y, player_speed, enemy_dies_sound_imp,
+                                          enemy_dies_sound_pinky, enemy_dies_sound_baron)
 
     # Обновление позиций противников
     enemy.enemy_position_update(enemy_var, player_speed, enemy_size)

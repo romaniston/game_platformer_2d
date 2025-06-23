@@ -61,12 +61,13 @@ def set_selected_weapon_sounds():
     selected_weapon_sound = pygame.mixer.Sound("assets/player/sounds/weapons/select_weapon.mp3")
     return selected_weapon_sound
 
+
 def auto_gun_shooting(selected_weapon, ping, damage, inertion, shoot_button_pressed, current_time, shoot_start_time,
                       player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
                       shoot_last_time, on_ground, player_pos_x):
     keys = pygame.key.get_pressed()
     # Обработка зажатия кнопки выстрела при автоматической стрельбе
-    if keys[pygame.K_SPACE] and selected_weapon in ["mp5", "machine_gun"]:
+    if keys[pygame.K_SPACE] and selected_weapon in ["machine_gun", "mp5"]:
         shoot_button_pressed = True
         print(shoot_button_pressed)
         if current_time - shoot_start_time >= ping:
@@ -89,6 +90,7 @@ def auto_gun_shooting(selected_weapon, ping, damage, inertion, shoot_button_pres
         shoot_button_pressed = False
     return shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
         shooting_player_image, player_size, shoot_last_time, on_ground
+
 
 def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting,
                                player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,
@@ -129,7 +131,11 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             else:
                 pass
 
-    elif selected_weapon == 'mp5' or 'machine_gun':
+    elif selected_weapon == 'mp5':
+        while shoot_button_pressed:
+            pass
+
+    elif selected_weapon == 'machine_gun':
         while shoot_button_pressed:
             pass
 
@@ -168,9 +174,11 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             print(ammo_supershotgun_left)
     else:
         pass
+
     return selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting,\
         player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,\
         ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed
+
 
     # Обработка выстрела. Если после начала выстрела прошло более N млс, то возвращаем спрайт player_stands
 def shot_image_ping(current_time, shoot_start_time, player_image, player_image_player_stands_path, player_size,

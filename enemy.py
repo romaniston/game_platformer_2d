@@ -13,7 +13,11 @@ def set_enemy_sprites(who_is):
     elif who_is == 'pinky':
         enemy_sprite_path = "assets/enemies/pinky/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
-        enemy_size = (100, 100)
+        enemy_size = (150, 150)
+    elif who_is == 'baron':
+        enemy_sprite_path = "assets/enemies/baron/enemy_walks_1.png"
+        enemy_sprite = pygame.image.load(enemy_sprite_path)
+        enemy_size = (200, 200)
     return enemy_sprite_path, enemy_sprite, enemy_size
 
 # Установка звуков врагов
@@ -22,6 +26,8 @@ def set_enemy_sounds(who_is):
         enemy_dies_sound = pygame.mixer.Sound("assets/enemies/imp/sounds/enemy_death.wav")
     elif who_is == 'pinky':
         enemy_dies_sound = pygame.mixer.Sound("assets/enemies/pinky/sounds/enemy_death.wav")
+    elif who_is == 'baron':
+        enemy_dies_sound = pygame.mixer.Sound("assets/enemies/baron/sounds/enemy_death.wav")
     return enemy_dies_sound
 
 # Класс противника
@@ -37,6 +43,8 @@ class Enemy(pygame.sprite.Sprite):
             self.speed = random.randint(1, 3) # Случайная скорость
         elif who_is == 'pinky':
             self.speed = random.randint(3, 6) # Случайная скорость
+        elif who_is == 'baron':
+            self.speed = random.randint(4, 8) # Случайная скорость
         self.background = background
 
         self.enemy_dies_sound = enemy_dies_sound
@@ -50,6 +58,8 @@ class Enemy(pygame.sprite.Sprite):
             sprite_count = {'death': 6, 'walks': 4}
         elif who_is == 'pinky':
             sprite_count = {'death': 7, 'walks': 4}
+        elif who_is == 'baron':
+            sprite_count = {'death': 6, 'walks': 4}
 
         for img_dth in range(sprite_count['death']):
             self.death_images.append(pygame.image.load(f"assets/enemies/{who_is}/enemy_death_{img_dth + 1}.png"))
@@ -66,6 +76,8 @@ class Enemy(pygame.sprite.Sprite):
             self.health = 3 # Здоровье
         if who_is == 'pinky':
             self.health = 8 # Здоровье
+        if who_is == 'baron':
+            self.health = 30 # Здоровье
         self.is_alive = True # Флаг жив ли противник
 
         self.death_sound_active = False
@@ -129,6 +141,7 @@ def find_closest_enemy(player_pos_x):
     return closest_enemy
 
 
+# Функция для определения ближайших живых противников к игроку
 def find_n_closest_enemies(player_x, enemies, n=3):
     enemies_with_distance = []
     for enemy in enemies:
@@ -149,12 +162,16 @@ def find_n_closest_enemies(player_x, enemies, n=3):
 
 
 # Создание противника с определенной вероятностью
-def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, enemy_dies_sound_pinky):
+def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed,
+                        enemy_dies_sound_imp, enemy_dies_sound_pinky, enemy_dies_sound_baron):
     if random.randint(1, 50) == 1:
-        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, 'imp')
+        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, who_is='imp')
         enemies.add(enemy_var)
-    elif random.randint(1, 25) == 2:
-        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_pinky, 'pinky')
+    elif random.randint(1, 100) == 2:
+        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_pinky, who_is='pinky')
+        enemies.add(enemy_var)
+    elif random.randint(1, 200) == 3:
+        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_baron, who_is='baron')
         enemies.add(enemy_var)
     else:
         enemy_var = None
