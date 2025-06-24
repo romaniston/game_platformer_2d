@@ -249,12 +249,11 @@ while True:
         player.player_jump(on_ground, player_pos_y, jump_speed, gravity, player_on_ground_y)
 
     # Создание противника с определенной вероятностью
-    enemy_var = enemy.enemy_random_create(background, enemy_sprite, enemy_size, WIDTH,
-                                          player_on_ground_y, player_speed, enemy_dies_sound_imp,
-                                          enemy_dies_sound_pinky, enemy_dies_sound_baron)
+    enemy_var = enemy.enemy_random_create(background, WIDTH, player_on_ground_y, player_speed)
+
 
     # Обновление позиций противников
-    enemy.enemy_position_update(enemy_var, player_speed, enemy_size)
+    enemy.enemy_position_update(player_speed)
 
     # Отрисовка объектов
     (screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,

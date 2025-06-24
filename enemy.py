@@ -13,11 +13,15 @@ def set_enemy_sprites(who_is):
     elif who_is == 'pinky':
         enemy_sprite_path = "assets/enemies/pinky/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
-        enemy_size = (150, 150)
+        enemy_size = (115, 115)
     elif who_is == 'baron':
         enemy_sprite_path = "assets/enemies/baron/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
-        enemy_size = (200, 200)
+        enemy_size = (100, 140)
+    elif who_is == 'cyberdemon':
+        enemy_sprite_path = "assets/enemies/cyberdemon/enemy_walks_1.png"
+        enemy_sprite = pygame.image.load(enemy_sprite_path)
+        enemy_size = (150, 175)
     return enemy_sprite_path, enemy_sprite, enemy_size
 
 # Установка звуков врагов
@@ -28,23 +32,28 @@ def set_enemy_sounds(who_is):
         enemy_dies_sound = pygame.mixer.Sound("assets/enemies/pinky/sounds/enemy_death.wav")
     elif who_is == 'baron':
         enemy_dies_sound = pygame.mixer.Sound("assets/enemies/baron/sounds/enemy_death.wav")
+    elif who_is == 'cyberdemon':
+        enemy_dies_sound = pygame.mixer.Sound("assets/enemies/cyberdemon/sounds/enemy_death.wav")
     return enemy_dies_sound
 
 # Класс противника
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound, who_is):
         super().__init__()
+        self.enemy_size = enemy_size
         self.image = enemy_sprite
-        self.image = pygame.transform.scale(enemy_sprite, enemy_size)
+        self.image = pygame.transform.scale(enemy_sprite, self.enemy_size)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
-        self.rect.y = (player_on_ground_y) # Высота противника
+        self.rect.y = player_on_ground_y - self.rect.height + 100 # Высота противника
         if who_is == 'imp':
             self.speed = random.randint(1, 3) # Случайная скорость
         elif who_is == 'pinky':
             self.speed = random.randint(3, 6) # Случайная скорость
         elif who_is == 'baron':
-            self.speed = random.randint(4, 8) # Случайная скорость
+            self.speed = random.randint(2, 4) # Случайная скорость
+        elif who_is == 'cyberdemon':
+            self.speed = random.randint(2, 3) # Случайная скорость
         self.background = background
 
         self.enemy_dies_sound = enemy_dies_sound
@@ -59,7 +68,9 @@ class Enemy(pygame.sprite.Sprite):
         elif who_is == 'pinky':
             sprite_count = {'death': 7, 'walks': 4}
         elif who_is == 'baron':
-            sprite_count = {'death': 6, 'walks': 4}
+            sprite_count = {'death': 6, 'walks': 6}
+        elif who_is == 'cyberdemon':
+            sprite_count = {'death': 9, 'walks': 4}
 
         for img_dth in range(sprite_count['death']):
             self.death_images.append(pygame.image.load(f"assets/enemies/{who_is}/enemy_death_{img_dth + 1}.png"))
@@ -78,42 +89,35 @@ class Enemy(pygame.sprite.Sprite):
             self.health = 8 # Здоровье
         if who_is == 'baron':
             self.health = 30 # Здоровье
+        if who_is == 'cyberdemon':
+            self.health = 100 # Здоровье
         self.is_alive = True # Флаг жив ли противник
 
         self.death_sound_active = False
 
     # Функция постоянного обновления состояния противника
-    def update(self, player_speed, enemy_size):
-        self.rect.x -= self.speed - player_speed # Движение противника на игрока
-        # Если противник (живой либо уничтоженный) уходит за левый край на -100 по x, то он исчезает
+    def update(self, player_speed):
+        self.rect.x -= self.speed - player_speed
         if self.rect.right <= -100:
             self.kill()
-        elif self.health > 0: # Если противник жив
-            # Запуск анимации ходьбы противника
-            if self.walks_index < len(self.walks_images):
-                self.walks_timer += 1
-                if self.walks_timer >= 15 / self.speed :  # Задержка, зависящая от скорости движения противника, чем он
-                                                          # медленнее идет, тем выше задержка переключения кадров
-                    self.image = pygame.transform.scale(self.walks_images[self.walks_index], enemy_size)
-                    self.walks_index += 1
-                    self.walks_timer = 0
-                    if self.walks_index == len(self.walks_images):
-                        self.walks_index = 0
-        else: # Если убит
+        elif self.health > 0:
+            self.walks_timer += 1
+            if self.walks_timer >= 15 / self.speed:
+                self.image = pygame.transform.scale(self.walks_images[self.walks_index], self.enemy_size)
+                self.walks_index = (self.walks_index + 1) % len(self.walks_images)
+                self.walks_timer = 0
+        else:
             self.is_alive = False
             self.speed = 0
-            # Запуск анимации уничтожения противника
+            self.death_timer += 1
             if self.death_index < len(self.death_images):
-                self.death_timer += 1
-                if self.death_timer >= 5:  # Задержка в пол секунды
-                    self.image = pygame.transform.scale(self.death_images[self.death_index], enemy_size)
+                if self.death_timer >= 5:
+                    self.image = pygame.transform.scale(self.death_images[self.death_index], self.enemy_size)
                     self.death_index += 1
                     self.death_timer = 0
                     if not self.death_sound_active:
                         self.enemy_dies_sound.play()
                         self.death_sound_active = True
-            else:
-                self.speed = 0
 
 
 # Создание группы для противников для отрисовки всех противников одновременно
@@ -157,26 +161,42 @@ def find_n_closest_enemies(player_x, enemies, n=3):
             enemies_with_distance.sort(key=lambda x: x[0])  # сортируем по расстоянию
             return [enemy for _, enemy in enemies_with_distance[:n]]  # возвращаем только объекты врагов
 
+def chance(start, end):
+    return random.randint(start, end)
 
 # VVV Игровой цикл VVV
 
 
 # Создание противника с определенной вероятностью
-def enemy_random_create(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed,
-                        enemy_dies_sound_imp, enemy_dies_sound_pinky, enemy_dies_sound_baron):
-    if random.randint(1, 50) == 1:
-        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_imp, who_is='imp')
-        enemies.add(enemy_var)
-    elif random.randint(1, 100) == 2:
-        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_pinky, who_is='pinky')
-        enemies.add(enemy_var)
-    elif random.randint(1, 200) == 3:
-        enemy_var = Enemy(background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound_baron, who_is='baron')
-        enemies.add(enemy_var)
+def enemy_random_create(background, WIDTH, player_on_ground_y, player_speed):
+    if chance(1, 50) == 1:
+        who_is = 'imp'
+    elif chance(1, 100) == 2:
+        who_is = 'pinky'
+    elif chance(1, 200) == 3:
+        who_is = 'baron'
+    elif chance(1, 400) == 4:
+        who_is = 'cyberdemon'
     else:
-        enemy_var = None
-    return enemy_var
+        return None
+
+    enemy_sprite_path, enemy_sprite, enemy_size = set_enemy_sprites(who_is)
+    enemy_dies_sound = set_enemy_sounds(who_is)
+
+    enemy = Enemy(
+        background=background,
+        enemy_sprite=enemy_sprite,
+        enemy_size=enemy_size,
+        WIDTH=WIDTH,
+        player_on_ground_y=player_on_ground_y,
+        player_speed=player_speed,
+        enemy_dies_sound=enemy_dies_sound,
+        who_is=who_is
+    )
+    enemies.add(enemy)
+    return enemy
+
 
 # Обновление позиций противников
-def enemy_position_update(enemy_var, player_speed, enemy_size):
-    enemies.update(player_speed, enemy_size)
+def enemy_position_update(player_speed):
+    enemies.update(player_speed)
