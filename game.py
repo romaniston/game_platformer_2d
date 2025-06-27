@@ -28,9 +28,7 @@ def set_background_music(background_music_path):
     pygame.mixer.music.play(-1)
 
 
-
 # VVV Игровой цикл VVV
-
 
 
 # Перемещение фонов для создания иллюзии движения игрока

@@ -1,5 +1,6 @@
 import sys
 import random
+import math
 
 import pygame
 
@@ -21,7 +22,7 @@ def set_enemy_sprites(who_is):
     elif who_is == 'cyberdemon':
         enemy_sprite_path = "assets/enemies/cyberdemon/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
-        enemy_size = (150, 175)
+        enemy_size = (140, 175)
     return enemy_sprite_path, enemy_sprite, enemy_size
 
 # Установка звуков врагов
@@ -46,6 +47,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
         self.rect.y = player_on_ground_y - self.rect.height + 100 # Высота противника
+        self.hitbox = self.rect.inflate(-10, -10)
         if who_is == 'imp':
             self.speed = random.randint(1, 3) # Случайная скорость
         elif who_is == 'pinky':
@@ -98,6 +100,9 @@ class Enemy(pygame.sprite.Sprite):
     # Функция постоянного обновления состояния противника
     def update(self, player_speed):
         self.rect.x -= self.speed - player_speed
+        self.hitbox = self.rect.inflate(-10, -10)
+        self.hitbox.x = self.rect.x
+        self.hitbox.y = self.rect.y
         if self.rect.right <= -100:
             self.kill()
         elif self.health > 0:
@@ -173,9 +178,9 @@ def enemy_random_create(background, WIDTH, player_on_ground_y, player_speed):
         who_is = 'imp'
     elif chance(1, 100) == 2:
         who_is = 'pinky'
-    elif chance(1, 200) == 3:
+    elif chance(1, 300) == 3:
         who_is = 'baron'
-    elif chance(1, 400) == 4:
+    elif chance(1, 600) == 4:
         who_is = 'cyberdemon'
     else:
         return None

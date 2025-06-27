@@ -180,7 +180,7 @@ while True:
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping, shoot_button_pressed)
+                                                          supershotgun_reload_ping, shoot_button_pressed, player_pos_y )
 
                 elif selected_weapon == 'shotgun':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
@@ -190,7 +190,7 @@ while True:
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping, shoot_button_pressed)
+                                                          supershotgun_reload_ping, shoot_button_pressed, player_pos_y )
 
                 elif selected_weapon == 'mp5':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
@@ -200,7 +200,7 @@ while True:
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping, shoot_button_pressed)
+                                                          supershotgun_reload_ping, shoot_button_pressed, player_pos_y )
 
                 elif selected_weapon == 'supershotgun':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
@@ -210,7 +210,7 @@ while True:
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping, shoot_button_pressed)
+                                                          supershotgun_reload_ping, shoot_button_pressed, player_pos_y )
 
                 elif selected_weapon == 'machine_gun':
                     selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting, \
@@ -220,7 +220,7 @@ while True:
                                                           player_shoots_sound, player_shooting, player_image,
                                                           shooting_player_image, on_ground, player_size, player_pos_x,
                                                           shoot_last_time, ammo_supershotgun_left,
-                                                          supershotgun_reload_ping, shoot_button_pressed)
+                                                          supershotgun_reload_ping, shoot_button_pressed, player_pos_y )
 
         elif event.type == pygame.KEYUP:
             if event.key in (pygame.K_a, pygame.K_d):
@@ -251,7 +251,6 @@ while True:
     # Создание противника с определенной вероятностью
     enemy_var = enemy.enemy_random_create(background, WIDTH, player_on_ground_y, player_speed)
 
-
     # Обновление позиций противников
     enemy.enemy_position_update(player_speed)
 
@@ -265,6 +264,17 @@ while True:
                              mp5_icon_on_bar, mp5_icon_on_bar_rect, supershotgun_icon_on_bar,
                              supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect,
                              enemy)
+
+    # Визуализация линии выстрела
+    line_height = 5
+    line_length = 1000
+    line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
+                            line_height)
+    pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
+
+    # Визуализация хитбоксов
+    for enemy_obj in enemy.enemies:
+        pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\

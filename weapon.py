@@ -94,7 +94,7 @@ def auto_gun_shooting(selected_weapon, ping, damage, inertion, shoot_button_pres
 
 def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, player_shoots_sound, player_shooting,
                                player_image, shooting_player_image, on_ground, player_size, player_pos_x, shoot_last_time,
-                               ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed):
+                               ammo_supershotgun_left, supershotgun_reload_ping, shoot_button_pressed, player_pos_y):
     if selected_weapon == 'pistol':
         if current_time - shoot_start_time >= 150:
             player_shoots_sound.play()
@@ -103,15 +103,21 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             player_image = pygame.transform.scale(player_image, player_size)
             shoot_start_time = pygame.time.get_ticks()  # Запоминаем время начала выстрела
 
-            # Уменьшение здоровья врага при выстреле и уничтожение
-            closest_enemy = enemy.find_closest_enemy(player_pos_x)
-            if on_ground:  # Если игрок на земле, он попадает по противникам
-                if closest_enemy:
-                    if closest_enemy.health > 0:
-                        closest_enemy.health -= 1
-                        closest_enemy.rect.x += 10  # Инерция противника от выстрела
-            else:
-                pass
+            # Линия выстрела
+            line_height = 5
+            line_length = 1000  # насколько далеко стреляет
+            line_y = player_pos_y + player_size[1] // 2 - line_height // 2  # центр игрока по вертикали
+            line_rect = pygame.Rect(player_pos_x + 40, line_y, line_length, line_height)
+
+            # Найти всех врагов, пересекающихся с линией
+            enemies_hit = [e for e in enemy.enemies if e.hitbox.colliderect(line_rect) and e.health > 0]
+
+            if enemies_hit:
+                # Выбрать ближайшего по x (вперед по оси x)
+                closest_enemy = min(enemies_hit, key=lambda e: e.rect.x)
+                # Нанести урон и инерцию
+                closest_enemy.health -= 1  # урон
+                closest_enemy.rect.x += 10  # инерция
 
     elif selected_weapon == 'shotgun':
         if current_time - shoot_start_time >= 500:
@@ -121,15 +127,21 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             player_image = pygame.transform.scale(player_image, player_size)
             shoot_start_time = pygame.time.get_ticks()  # Запоминаем время начала выстрела
 
-            # Уменьшение здоровья врага при выстреле и уничтожение
-            closest_enemy = enemy.find_closest_enemy(player_pos_x)
-            if on_ground:  # Если игрок на земле, он попадает по противникам
-                if closest_enemy:
-                    if closest_enemy.health > 0:
-                        closest_enemy.health -= 3
-                        closest_enemy.rect.x += 30  # Инерция противника от выстрела
-            else:
-                pass
+            # Линия выстрела
+            line_height = 5
+            line_length = 1000  # насколько далеко стреляет
+            line_y = player_pos_y + player_size[1] // 2 - line_height // 2  # центр игрока по вертикали
+            line_rect = pygame.Rect(player_pos_x + 40, line_y, line_length, line_height)
+
+            # Найти всех врагов, пересекающихся с линией
+            enemies_hit = [e for e in enemy.enemies if e.hitbox.colliderect(line_rect) and e.health > 0]
+
+            if enemies_hit:
+                # Выбрать ближайшего по x (вперед по оси x)
+                closest_enemy = min(enemies_hit, key=lambda e: e.rect.x)
+                # Нанести урон и инерцию
+                closest_enemy.health -= 3  # урон
+                closest_enemy.rect.x += 30  # инерция
 
     elif selected_weapon == 'mp5':
         while shoot_button_pressed:
