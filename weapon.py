@@ -64,31 +64,37 @@ def set_selected_weapon_sounds():
 
 def auto_gun_shooting(selected_weapon, ping, damage, inertion, shoot_button_pressed, current_time, shoot_start_time,
                       player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
-                      shoot_last_time, on_ground, player_pos_x):
+                      shoot_last_time, on_ground, player_pos_x, player_pos_y, enemy):
     keys = pygame.key.get_pressed()
+
     # Обработка зажатия кнопки выстрела при автоматической стрельбе
     if keys[pygame.K_SPACE] and selected_weapon in ["machine_gun", "mp5"]:
         shoot_button_pressed = True
-        print(shoot_button_pressed)
+
         if current_time - shoot_start_time >= ping:
             player_shoots_sound.play()
             player_shooting = True
             player_image = shooting_player_image
             player_image = pygame.transform.scale(player_image, player_size)
-            shoot_start_time = current_time  # Запоминаем время начала выстрела
+            shoot_start_time = current_time
             shoot_last_time = current_time
-            print(123)
 
-            # Уменьшение здоровья врага при выстреле и уничтожение
-            closest_enemy = enemy.find_closest_enemy(player_pos_x)
-            if on_ground:  # Если игрок на земле, он попадает по противникам
-                if closest_enemy:
-                    if closest_enemy.health > 0:
-                        closest_enemy.health -= damage
-                        closest_enemy.rect.x += inertion  # Инерция противника от выстрела
+            # Построение линии выстрела
+            line_height = 4  # уже, чем у shotgun
+            line_length = 1000
+            line_y = player_pos_y + player_size[1] // 2 - line_height // 2
+            line_rect = pygame.Rect(player_pos_x + 40, line_y, line_length, line_height)
+
+            # Найти ближайшего врага по линии
+            enemies_hit = [e for e in enemy.enemies if e.hitbox.colliderect(line_rect) and e.health > 0]
+            if enemies_hit:
+                closest_enemy = min(enemies_hit, key=lambda e: e.rect.x)
+                closest_enemy.health -= damage
+                closest_enemy.rect.x += inertion  # инерция от выстрела
     else:
         shoot_button_pressed = False
-    return shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
+
+    return shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image, \
         shooting_player_image, player_size, shoot_last_time, on_ground
 
 
@@ -104,7 +110,7 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             shoot_start_time = pygame.time.get_ticks()  # Запоминаем время начала выстрела
 
             # Линия выстрела
-            line_height = 5
+            line_height = 1
             line_length = 1000  # насколько далеко стреляет
             line_y = player_pos_y + player_size[1] // 2 - line_height // 2  # центр игрока по вертикали
             line_rect = pygame.Rect(player_pos_x + 40, line_y, line_length, line_height)
@@ -159,6 +165,7 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
         elif ammo_supershotgun_left == 1:
             player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/supershotgun_shoot.wav")
             supershotgun_reload_ping = 100
+
         if current_time - shoot_start_time >= supershotgun_reload_ping:
             player_shoots_sound.play()
             player_shooting = True
@@ -166,24 +173,28 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
             player_image = pygame.transform.scale(player_image, player_size)
             shoot_start_time = current_time  # Запоминаем время начала выстрела
 
-            # Уменьшение здоровья врага при выстреле и уничтожение
-            enemies = enemy.enemies
-            if on_ground:
-                closest_enemies = enemy.find_n_closest_enemies(player_pos_x, enemies, n=3)
-                try:
-                    for enemy_obj in closest_enemies:
-                        if enemy_obj.health > 0:
-                            enemy_obj.health -= 10
-                            enemy_obj.rect.x += 40
-                except TypeError:
-                    pass
+            # Линия выстрела
+            line_height = 12  # шире, чем у пистолета
+            line_length = 1000
+            line_y = player_pos_y + player_size[1] // 2 - line_height // 2
+            line_rect = pygame.Rect(player_pos_x + 40, line_y, line_length, line_height)
 
+            # Найти всех врагов, пересекающихся с линией
+            enemies_hit = [e for e in enemy.enemies if e.hitbox.colliderect(line_rect) and e.health > 0]
+
+            if enemies_hit:
+                # Отсортировать по расстоянию по X и выбрать до 3-х ближайших
+                enemies_hit.sort(key=lambda e: e.rect.x)
+                for e in enemies_hit[:3]:  # максимум 3 врага
+                    e.health -= 10
+                    e.rect.x += 40  # инерция
+
+            # Управление перезарядкой
             if ammo_supershotgun_left == 1:
                 supershotgun_reload_ping = 750
                 ammo_supershotgun_left = 2
             else:
                 ammo_supershotgun_left -= 1
-            print(ammo_supershotgun_left)
     else:
         pass
 

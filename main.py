@@ -72,7 +72,7 @@ while True:
                 weapon.auto_gun_shooting(selected_weapon, 125, 1.5, 20, shoot_button_pressed, current_time,
                                          shoot_start_time,
                                          player_shoots_sound, player_shooting, player_image, shooting_player_image, player_size,
-                                         shoot_last_time, on_ground, player_pos_x)
+                                         shoot_last_time, on_ground, player_pos_x, player_pos_y, enemy)
     elif selected_weapon == 'machine_gun':
         shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
             shooting_player_image, player_size, shoot_last_time, on_ground =\
@@ -80,7 +80,7 @@ while True:
                                          shoot_start_time,
                                          player_shoots_sound, player_shooting, player_image, shooting_player_image,
                                          player_size,
-                                         shoot_last_time, on_ground, player_pos_x)
+                                         shoot_last_time, on_ground, player_pos_x, player_pos_y, enemy)
 
     # Обработка событий
     for event in pygame.event.get():
@@ -265,16 +265,16 @@ while True:
                              supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect,
                              enemy)
 
-    # Визуализация линии выстрела
-    line_height = 5
-    line_length = 1000
-    line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
-                            line_height)
-    pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
-
-    # Визуализация хитбоксов
-    for enemy_obj in enemy.enemies:
-        pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
+    # # Визуализация линии выстрела
+    # line_height = 5
+    # line_length = 1000
+    # line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
+    #                         line_height)
+    # pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
+    #
+    # # Визуализация хитбоксов
+    # for enemy_obj in enemy.enemies:
+    #     pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\
