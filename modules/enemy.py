@@ -15,6 +15,10 @@ def set_enemy_sprites(who_is):
         enemy_sprite_path = "assets/enemies/pinky/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
         enemy_size = (115, 115)
+    elif who_is == 'cacodemon':
+        enemy_sprite_path = "assets/enemies/cacodemon/enemy_walks_1.png"
+        enemy_sprite = pygame.image.load(enemy_sprite_path)
+        enemy_size = (125, 125)
     elif who_is == 'baron':
         enemy_sprite_path = "assets/enemies/baron/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
@@ -22,11 +26,7 @@ def set_enemy_sprites(who_is):
     elif who_is == 'cyberdemon':
         enemy_sprite_path = "assets/enemies/cyberdemon/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
-        enemy_size = (140, 175)
-    elif who_is == 'cacodemon':
-        enemy_sprite_path = "assets/enemies/cacodemon/enemy_walks_1.png"
-        enemy_sprite = pygame.image.load(enemy_sprite_path)
-        enemy_size = (100, 100)
+        enemy_size = (300, 250)
     return enemy_sprite_path, enemy_sprite, enemy_size
 
 
@@ -55,9 +55,12 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(enemy_sprite, self.enemy_size)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
-        self.hitbox = self.rect.inflate(-10, -10)
+        if who_is == 'cyberdemon':
+            self.hitbox = self.rect.inflate(-100, -100)
+        else:
+            self.hitbox = self.rect.inflate(-10, -10)
         if who_is == 'cacodemon':
-            self.rect.y = random.randint(25, 25)
+            self.rect.y = 5
         else:
             self.rect.y = player_on_ground_y - self.rect.height + 100  # Высота противника
 
@@ -139,7 +142,7 @@ class Enemy(pygame.sprite.Sprite):
 
             # Enemy falling down after destroy
             if self.who_is == 'cacodemon':
-                if self.rect.y >= player_on_ground_y:
+                if self.rect.y >= (player_on_ground_y - 25):
                     pass
                 else:
                     self.rect.y += 10
