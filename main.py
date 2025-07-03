@@ -18,7 +18,7 @@ background, background_rect, background_width, background1_rect, background2_rec
     game.set_backrounds("assets/background/background.jpg")
 
 # Установка и запуск фоновой музыки
-game.set_background_music("assets/background/background_music.mp3")
+# game.set_background_music("assets/background/background_music.mp3")
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
@@ -159,7 +159,7 @@ while True:
             elif event.key == pygame.K_5:
                 selected_weapon = 'machine_gun'
                 player_shoots_sound = pygame.mixer.Sound("assets/player/sounds/weapons/machine_gun_shoot.wav")
-                shooting_player_image = pygame.image.load("assets/player/player_supershotgun_shoots.png")
+                shooting_player_image = pygame.image.load("assets/player/player_machine_gun_shoots.png")
 
                 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect, \
                         shotgun_icon_on_bar, shotgun_icon_on_bar_size, shotgun_icon_on_bar_rect, \
