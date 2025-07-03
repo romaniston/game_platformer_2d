@@ -4,7 +4,7 @@ from logging import exception
 
 import pygame
 
-import enemy
+from modules import enemy
 
 
 # weapons_bar (панель выбора оружия)

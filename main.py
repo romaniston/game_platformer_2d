@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-import game, player, enemy, weapon
+from modules import game, player, enemy, weapon
 
 
 # Инициализация Pygame
