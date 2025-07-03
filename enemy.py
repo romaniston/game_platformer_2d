@@ -23,7 +23,12 @@ def set_enemy_sprites(who_is):
         enemy_sprite_path = "assets/enemies/cyberdemon/enemy_walks_1.png"
         enemy_sprite = pygame.image.load(enemy_sprite_path)
         enemy_size = (140, 175)
+    elif who_is == 'cacodemon':
+        enemy_sprite_path = "assets/enemies/cacodemon/enemy_walks_1.png"
+        enemy_sprite = pygame.image.load(enemy_sprite_path)
+        enemy_size = (100, 100)
     return enemy_sprite_path, enemy_sprite, enemy_size
+
 
 # Установка звуков врагов
 def set_enemy_sounds(who_is):
@@ -35,23 +40,33 @@ def set_enemy_sounds(who_is):
         enemy_dies_sound = pygame.mixer.Sound("assets/enemies/baron/sounds/enemy_death.wav")
     elif who_is == 'cyberdemon':
         enemy_dies_sound = pygame.mixer.Sound("assets/enemies/cyberdemon/sounds/enemy_death.wav")
+    elif who_is == 'cacodemon':
+        enemy_dies_sound = pygame.mixer.Sound("assets/enemies/cacodemon/sounds/enemy_death.wav")
     return enemy_dies_sound
+
 
 # Класс противника
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed, enemy_dies_sound, who_is):
+    def __init__(self, background, enemy_sprite, enemy_size, WIDTH, player_on_ground_y, player_speed,
+                 enemy_dies_sound, who_is):
         super().__init__()
         self.enemy_size = enemy_size
         self.image = enemy_sprite
         self.image = pygame.transform.scale(enemy_sprite, self.enemy_size)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
-        self.rect.y = player_on_ground_y - self.rect.height + 100 # Высота противника
         self.hitbox = self.rect.inflate(-10, -10)
+        if who_is == 'cacodemon':
+            self.rect.y = random.randint(25, 25)
+        else:
+            self.rect.y = player_on_ground_y - self.rect.height + 100  # Высота противника
+
         if who_is == 'imp':
             self.speed = random.randint(1, 3) # Случайная скорость
         elif who_is == 'pinky':
             self.speed = random.randint(3, 6) # Случайная скорость
+        elif who_is == 'cacodemon':
+            self.speed = random.randint(2, 3) # Случайная скорость
         elif who_is == 'baron':
             self.speed = random.randint(2, 4) # Случайная скорость
         elif who_is == 'cyberdemon':
@@ -61,23 +76,26 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_dies_sound = enemy_dies_sound
         self.who_is = who_is
 
-        # Загружаем анимации противника
-        # Список изображений для анимации уничтожения
-        self.death_images = []
         # Подсчет числа спрайтов относительно выбранного негодника
         if who_is == 'imp':
             sprite_count = {'death': 6, 'walks': 4}
         elif who_is == 'pinky':
             sprite_count = {'death': 7, 'walks': 4}
+        elif who_is == 'cacodemon':
+            sprite_count = {'death': 5, 'walks': 1}
         elif who_is == 'baron':
             sprite_count = {'death': 6, 'walks': 6}
         elif who_is == 'cyberdemon':
             sprite_count = {'death': 9, 'walks': 4}
 
+        # Загружаем анимации противника
+        # Список изображений для анимации уничтожения
+        self.death_images = []
         for img_dth in range(sprite_count['death']):
             self.death_images.append(pygame.image.load(f"assets/enemies/{who_is}/enemy_death_{img_dth + 1}.png"))
         self.death_index = 0  # Индекс текущего изображения анимации смерти
         self.death_timer = 0 # Таймер для анимации смерти
+
         # Анимация ходьбы
         self.walks_images = []
         for img_wlk in range(sprite_count['walks']):
@@ -87,18 +105,21 @@ class Enemy(pygame.sprite.Sprite):
 
         if who_is == 'imp':
             self.health = 3 # Здоровье
-        if who_is == 'pinky':
+        elif who_is == 'pinky':
             self.health = 8 # Здоровье
-        if who_is == 'baron':
-            self.health = 30 # Здоровье
-        if who_is == 'cyberdemon':
+        elif who_is == 'cacodemon':
+            self.health = 20 # Здоровье
+        elif who_is == 'baron':
+            self.health = 40 # Здоровье
+        elif who_is == 'cyberdemon':
             self.health = 100 # Здоровье
+
         self.is_alive = True # Флаг жив ли противник
 
         self.death_sound_active = False
 
     # Функция постоянного обновления состояния противника
-    def update(self, player_speed):
+    def update(self, player_speed, player_on_ground_y):
         self.rect.x -= self.speed - player_speed
         self.hitbox = self.rect.inflate(-10, -10)
         self.hitbox.x = self.rect.x
@@ -115,6 +136,14 @@ class Enemy(pygame.sprite.Sprite):
             self.is_alive = False
             self.speed = 0
             self.death_timer += 1
+
+            # Enemy falling down after destroy
+            if self.who_is == 'cacodemon':
+                if self.rect.y >= player_on_ground_y:
+                    pass
+                else:
+                    self.rect.y += 10
+
             if self.death_index < len(self.death_images):
                 if self.death_timer >= 5:
                     self.image = pygame.transform.scale(self.death_images[self.death_index], self.enemy_size)
@@ -129,47 +158,11 @@ class Enemy(pygame.sprite.Sprite):
 enemies = pygame.sprite.Group()
 
 
-# Функция для определения самого ближайшего живого противника к игроку
-def find_closest_enemy(player_pos_x):
-    closest_enemy = None
-    min_distance = float('inf')  # Для вычисления противника с наименьшей дистанцией к игроку
-    # Перебор всех существующих противников
-    for enemy in enemies:
-        if not enemy.is_alive: # Если противник убит, исключаем его из цикла
-            continue
-        else:
-            distance = abs(enemy.rect.x - player_pos_x) # Вычисление дистанции до игрока текущего противника
-            if enemy.rect.x > player_pos_x:
-                if distance < min_distance:
-                    min_distance = distance
-                    closest_enemy = enemy
-                if enemy.health <= 0:  # Проверяем, жив ли противник
-                    if distance < min_distance:
-                        min_distance = distance
-                        closest_enemy = enemy
-    return closest_enemy
-
-
-# Функция для определения ближайших живых противников к игроку
-def find_n_closest_enemies(player_x, enemies, n=3):
-    enemies_with_distance = []
-    for enemy in enemies:
-        if not enemy.is_alive: # Если противник убит, исключаем его из цикла
-            continue
-        else:
-            for enemy in enemies:
-                distance = abs(enemy.rect.centerx - player_x)
-                if enemy.health <= 0:
-                    pass
-                else:
-                    enemies_with_distance.append((distance, enemy))
-            enemies_with_distance.sort(key=lambda x: x[0])  # сортируем по расстоянию
-            return [enemy for _, enemy in enemies_with_distance[:n]]  # возвращаем только объекты врагов
-
 def chance(start, end):
     return random.randint(start, end)
 
-# VVV Игровой цикл VVV
+
+# VVV For Game Circle VVV
 
 
 # Создание противника с определенной вероятностью
@@ -178,14 +171,17 @@ def enemy_random_create(background, WIDTH, player_on_ground_y, player_speed):
         who_is = 'imp'
     elif chance(1, 100) == 2:
         who_is = 'pinky'
-    elif chance(1, 300) == 3:
+    elif chance(1, 200) == 3:
+        who_is = 'cacodemon'
+    elif chance(1, 300) == 4:
         who_is = 'baron'
-    elif chance(1, 600) == 4:
+    elif chance(1, 600) == 5:
         who_is = 'cyberdemon'
     else:
         return None
 
     enemy_sprite_path, enemy_sprite, enemy_size = set_enemy_sprites(who_is)
+
     enemy_dies_sound = set_enemy_sounds(who_is)
 
     enemy = Enemy(
@@ -203,5 +199,5 @@ def enemy_random_create(background, WIDTH, player_on_ground_y, player_speed):
 
 
 # Обновление позиций противников
-def enemy_position_update(player_speed):
-    enemies.update(player_speed)
+def enemy_position_update(player_speed, player_on_ground_y):
+    enemies.update(player_speed, player_on_ground_y)

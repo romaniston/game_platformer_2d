@@ -26,8 +26,7 @@ player_image_player_stands_path, player_image, player_size, player_image, player
     player.set_player_sprites()
 
 # Установка спрайтов врагов
-enemy_sprite_path, enemy_sprite, enemy_size =\
-    enemy.set_enemy_sprites('imp')
+enemy_sprite_path, enemy_sprite, enemy_size = enemy.set_enemy_sprites('imp')
 
 # Установка параметров игрока
 player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_speed, on_ground, \
@@ -46,9 +45,6 @@ pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
 
 # Установка звуковых эффектов
 player_shoots_sound, player_jumps_sound, player_runs_sound = player.set_player_sounds()
-enemy_dies_sound_imp = enemy.set_enemy_sounds('imp')
-enemy_dies_sound_pinky = enemy.set_enemy_sounds('pinky')
-enemy_dies_sound_baron = enemy.set_enemy_sounds('baron')
 
 selected_weapon_sound = weapon.set_selected_weapon_sounds()
 
@@ -252,7 +248,7 @@ while True:
     enemy_var = enemy.enemy_random_create(background, WIDTH, player_on_ground_y, player_speed)
 
     # Обновление позиций противников
-    enemy.enemy_position_update(player_speed)
+    enemy.enemy_position_update(player_speed, player_on_ground_y)
 
     # Отрисовка объектов
     (screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,
