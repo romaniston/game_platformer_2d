@@ -18,7 +18,7 @@ background, background_rect, background_width, background1_rect, background2_rec
     game.set_backrounds("assets/background/background.jpg")
 
 # Установка и запуск фоновой музыки
-# game.set_background_music("assets/background/background_music.mp3")
+game.set_background_music("assets/background/background_music.mp3")
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
@@ -72,7 +72,7 @@ while True:
     elif selected_weapon == 'machine_gun':
         shoot_button_pressed, current_time, shoot_start_time, player_shoots_sound, player_shooting, player_image,\
             shooting_player_image, player_size, shoot_last_time, on_ground =\
-                weapon.auto_gun_shooting(selected_weapon, 100, 5, 75, shoot_button_pressed, current_time,
+                weapon.auto_gun_shooting(selected_weapon, 100, 6, 40, shoot_button_pressed, current_time,
                                          shoot_start_time,
                                          player_shoots_sound, player_shooting, player_image, shooting_player_image,
                                          player_size,

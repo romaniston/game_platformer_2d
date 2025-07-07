@@ -146,7 +146,7 @@ def selected_weapon_parameters(selected_weapon, current_time, shoot_start_time, 
                 # Выбрать ближайшего по x (вперед по оси x)
                 closest_enemy = min(enemies_hit, key=lambda e: e.rect.x)
                 # Нанести урон и инерцию
-                closest_enemy.health -= 3  # урон
+                closest_enemy.health -= 4  # урон
                 closest_enemy.rect.x += 30  # инерция
 
     elif selected_weapon == 'mp5':

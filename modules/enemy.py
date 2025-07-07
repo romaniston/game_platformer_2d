@@ -111,7 +111,7 @@ class Enemy(pygame.sprite.Sprite):
         elif who_is == 'pinky':
             self.health = 8 # Здоровье
         elif who_is == 'cacodemon':
-            self.health = 20 # Здоровье
+            self.health = 15 # Здоровье
         elif who_is == 'baron':
             self.health = 40 # Здоровье
         elif who_is == 'cyberdemon':
