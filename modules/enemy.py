@@ -56,7 +56,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(WIDTH, WIDTH + 200) # Появление за правой границей экрана
         if who_is == 'cyberdemon':
-            self.hitbox = self.rect.inflate(-100, -100)
+            self.hitbox = self.rect.inflate(-100, 100)
         else:
             self.hitbox = self.rect.inflate(-10, -10)
         if who_is == 'cacodemon':
@@ -124,9 +124,16 @@ class Enemy(pygame.sprite.Sprite):
     # Функция постоянного обновления состояния противника
     def update(self, player_speed, player_on_ground_y):
         self.rect.x -= self.speed - player_speed
-        self.hitbox = self.rect.inflate(-10, -10)
-        self.hitbox.x = self.rect.x
-        self.hitbox.y = self.rect.y
+
+        if self.who_is == 'cyberdemon':
+            self.hitbox = self.rect.inflate(-150, -60)
+            self.hitbox.x = self.rect.x + 80
+            self.hitbox.y = self.rect.y + 60
+        else:
+            self.hitbox = self.rect.inflate(-10, -10)
+            self.hitbox.x = self.rect.x
+            self.hitbox.y = self.rect.y
+
         if self.rect.right <= -100:
             self.kill()
         elif self.health > 0:

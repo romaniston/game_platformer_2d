@@ -261,16 +261,16 @@ while True:
                              supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect,
                              enemy)
 
-    # # Визуализация линии выстрела
-    # line_height = 5
-    # line_length = 1000
-    # line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
-    #                         line_height)
-    # pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
-    #
-    # # Визуализация хитбоксов
-    # for enemy_obj in enemy.enemies:
-    #     pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
+    # Визуализация линии выстрела
+    line_height = 5
+    line_length = 1000
+    line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
+                            line_height)
+    pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
+
+    # Визуализация хитбоксов
+    for enemy_obj in enemy.enemies:
+        pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\
