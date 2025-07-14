@@ -18,7 +18,7 @@ background, background_rect, background_width, background1_rect, background2_rec
     game.set_backrounds("assets/background/background.jpg")
 
 # Установка и запуск фоновой музыки
-game.set_background_music("assets/background/background_music.mp3")
+# game.set_background_music("assets/background/background_music.mp3")
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
@@ -245,10 +245,10 @@ while True:
         player.player_jump(on_ground, player_pos_y, jump_speed, gravity, player_on_ground_y)
 
     # Создание противника с определенной вероятностью
-    enemy_var = enemy.enemy_random_create(background, WIDTH, player_on_ground_y, player_speed)
+    enemy_var = enemy.enemy_random_create(background, WIDTH, player_on_ground_y, player_speed, player_pos_y)
 
     # Обновление позиций противников
-    enemy.enemy_position_update(player_speed, player_on_ground_y)
+    enemy.enemy_position_update(player_speed, player_on_ground_y, player_pos_y)
 
     # Отрисовка объектов
     (screen, background, background1_rect, background2_rect, pistol_icon_on_bar, pistol_icon_on_bar_rect,
@@ -261,16 +261,16 @@ while True:
                              supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect,
                              enemy)
 
-    # Визуализация линии выстрела
-    line_height = 5
-    line_length = 1000
-    line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
-                            line_height)
-    pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
-
-    # Визуализация хитбоксов
-    for enemy_obj in enemy.enemies:
-        pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
+    # # Визуализация линии выстрела
+    # line_height = 5
+    # line_length = 1000
+    # line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
+    #                         line_height)
+    # pygame.draw.rect(screen, (255, 0, 0), line_rect, 2)
+    #
+    # # Визуализация хитбоксов
+    # for enemy_obj in enemy.enemies:
+    #     pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\
@@ -292,6 +292,9 @@ while True:
     last_frame_change_time_stands, on_ground, player_image_player_stands_path, player_image, player_size =\
         player.player_staying_and_breating_animation(current_time, last_frame_change_time_stands, on_ground,
                                                      player_image_player_stands_path, player_image, player_size)
+
+    enemy.enemy_projectiles.update(player_speed)
+    enemy.enemy_projectiles.draw(screen)
 
     # Обновление экрана после отрисовки объектов
     pygame.display.flip()

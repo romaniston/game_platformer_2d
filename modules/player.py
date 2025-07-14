@@ -15,11 +15,12 @@ def set_player_sprites():
     player_walks = [pygame.transform.scale(img, player_size_walks) for img in player_walks]
     return player_image_player_stands_path, player_image, player_size, player_image, player_walks, player_size_walks, player_walks
 
+player_pos_x_val = 75
 
 # Установка параметров игрока
 def set_player_parameters():
     player_on_ground_y = 202
-    player_pos_x = 75
+    player_pos_x = player_pos_x_val
     player_pos_y = player_on_ground_y
     jump_strength = 18
     gravity = 1
