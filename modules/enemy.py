@@ -49,7 +49,7 @@ def set_enemy_projectiles(who_is):
     elif who_is == 'cyberdemon':
         projectile_path = "assets/enemies/cyberdemon/projectile.png"
         projectiles_sprite = pygame.image.load(projectile_path)
-        projectile_size = (50, 250)
+        projectile_size = (100, 50)
     return projectiles_sprite, projectile_size
 
 
@@ -105,7 +105,16 @@ class Enemy(pygame.sprite.Sprite):
         self.attack_images = []
         self.attack_index = 0
         self.attack_timer = 0
-        self.attack_cooldown = random.randint(90, 150)
+
+        if who_is == 'imp':
+            self.attack_cooldown = random.randint(50, 100)
+        elif who_is == 'cacodemon':
+            self.attack_cooldown = random.randint(100, 200)
+        elif who_is == 'baron':
+            self.attack_cooldown = random.randint(300, 400)
+        elif who_is == 'cyberdemon':
+            self.attack_cooldown = random.randint(400, 600)
+
         self.target_player = player_pos_y
         self.projectiles = pygame.sprite.Group()
         self.player_pos_x = player_pos_x_val
@@ -188,7 +197,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.death_sound_active = False
 
-    def shoot_projectile(self, player_pos_y):
+    def shoot_projectile(self, player_pos_y, who_is):
         start_x = self.rect.centerx
         start_y = self.rect.centery
 
@@ -203,7 +212,15 @@ class Enemy(pygame.sprite.Sprite):
         if distance == 0:
             distance = 1  # во избежание деления на ноль
 
-        speed = 3  # общая скорость полета снаряда
+        if self.who_is == 'imp':
+            speed = 2
+        elif self.who_is == 'cacodemon':
+            speed = 2
+        elif self.who_is == 'baron':
+            speed = 4
+        elif self.who_is == 'cyberdemon':
+            speed = 8
+
         velocity_x = dx / distance * speed
         velocity_y = dy / distance * speed
 
@@ -247,18 +264,15 @@ class Enemy(pygame.sprite.Sprite):
                     self.image = pygame.transform.scale(self.attack_images[self.attack_index], self.enemy_size)
                     self.attack_index += 1
                     if self.attack_index >= len(self.attack_images):
-                        # Конец анимации атаки — запускаем проджектайл
                         if self.who_is == 'imp':
-                            # Прямолинейный вперёд
                             direction = (1, 0)
                         else:
-                            # В игрока
                             dx = self.player_pos_x
                             dy = player_on_ground_y
                             length = max(1, math.hypot(dx, dy))
                             direction = (dy / length)
 
-                        self.shoot_projectile(player_pos_y)
+                        self.shoot_projectile(player_pos_y, self.who_is)
                         self.attack_timer = 0
                         self.attack_index = 0
 
