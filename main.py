@@ -18,7 +18,7 @@ background, background_rect, background_width, background1_rect, background2_rec
     game.set_backrounds("assets/background/background.jpg")
 
 # Установка и запуск фоновой музыки
-# game.set_background_music("assets/background/background_music.mp3")
+game.set_background_music("assets/background/background_music.mp3")
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
@@ -33,7 +33,7 @@ player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_spe
         shoot_start_time, shoot_last_time, player_speed, current_walk_frame, player_shooting,\
         is_running_sound_playing, speed_val, selected_weapon, shooting_player_image, shoot_button_pressed,\
         ammo_supershotgun_left, supershotgun_reload_ping =\
-    player.set_player_parameters()
+    player.set_player_parameters(only_health=False, change_health=False, change_val=0)
 
 # Установка параметров панели с оружием
 pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
@@ -261,7 +261,17 @@ while True:
                              supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar, machine_gun_icon_on_bar_rect,
                              enemy)
 
-    # # Визуализация линии выстрела
+    # Хитбокс игрока
+    player_hitbox = player.get_player_hitbox(player_pos_x, player_pos_y, player_size)
+
+    # Здоровье
+    font = pygame.font.Font("assets/fonts/doom.ttf", 36)
+    player_health_val = player.set_player_parameters(only_health=True, change_health=False, change_val=0)
+    health_text = font.render(f"HP: {player_health_val}", True, (255, 0, 0))
+    screen.blit(health_text, (10, screen.get_height() - 45))
+
+    # Отладка VVV
+    # Визуализация линии выстрела
     # line_height = 5
     # line_length = 1000
     # line_rect = pygame.Rect(player_pos_x + 40, player_pos_y + player_size[1] // 2 - line_height // 2, line_length,
@@ -271,6 +281,9 @@ while True:
     # # Визуализация хитбоксов
     # for enemy_obj in enemy.enemies:
     #     pygame.draw.rect(screen, (255, 0, 0), enemy_obj.hitbox, 2)
+    #
+    #pygame.draw.rect(screen, (255, 0, 0), player_hitbox, 2)
+    # Отладка ^^^
 
     # Анимация player_walks + замена спрайта игрока при выстреле при ходьбе
     player_speed, player_shooting, player_image, shooting_player_image, player_size, player_pos_x,\
@@ -295,6 +308,9 @@ while True:
 
     enemy.enemy_projectiles.update(player_speed)
     enemy.enemy_projectiles.draw(screen)
+
+    # Попадание проджектайлов
+    enemy.damage_to_player(enemy.enemy_projectiles, player_hitbox)
 
     # Обновление экрана после отрисовки объектов
     pygame.display.flip()

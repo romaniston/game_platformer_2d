@@ -4,6 +4,8 @@ import random
 import pygame
 
 
+player_health = 100
+
 # Установка спрайтов игрока
 def set_player_sprites():
     player_image_player_stands_path = "assets/player/player_stands_1.png"
@@ -18,7 +20,10 @@ def set_player_sprites():
 player_pos_x_val = 75
 
 # Установка параметров игрока
-def set_player_parameters():
+def set_player_parameters(only_health, change_health, change_val):
+
+    global player_health
+
     player_on_ground_y = 202
     player_pos_x = player_pos_x_val
     player_pos_y = player_on_ground_y
@@ -38,10 +43,18 @@ def set_player_parameters():
     shoot_button_pressed = False
     ammo_supershotgun_left = 2
     supershotgun_reload_ping = 0
-    return player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_speed, on_ground,\
-        shoot_start_time, shoot_last_time, player_speed, current_walk_frame, player_shooting, is_running_sound_playing,\
-        speed_val, selected_weapon, shooting_player_image, shoot_button_pressed, ammo_supershotgun_left,\
-        supershotgun_reload_ping
+
+    if only_health:
+        return player_health
+    elif change_health:
+        player_health += int(change_val)
+        print(change_val)
+        return player_health
+    else:
+        return player_on_ground_y, player_pos_x, player_pos_y, jump_strength, gravity, jump_speed, on_ground,\
+            shoot_start_time, shoot_last_time, player_speed, current_walk_frame, player_shooting, is_running_sound_playing,\
+            speed_val, selected_weapon, shooting_player_image, shoot_button_pressed, ammo_supershotgun_left,\
+            supershotgun_reload_ping
 
 
 # Установка звуков игрока
@@ -168,3 +181,12 @@ def player_staying_and_breating_animation(current_time, last_frame_change_time_s
             player_image_player_stands_path = "assets/player/player_stands_1.png"
     return last_frame_change_time_stands, on_ground, player_image_player_stands_path,\
                                           player_image, player_size
+
+
+# Создание хитбокса игрока
+def get_player_hitbox(player_pos_x, player_pos_y, player_size):
+    hitbox_width = int(player_size[0] * 0.2)
+    hitbox_height = int(player_size[1] * 0.6)
+    hitbox_x = player_pos_x + int(player_size[0] - 200)
+    hitbox_y = player_pos_y + int(player_size[1] * 0.2)
+    return pygame.Rect(hitbox_x, hitbox_y, hitbox_width, hitbox_height)
