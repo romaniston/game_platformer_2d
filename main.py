@@ -270,6 +270,9 @@ while True:
     health_text = font.render(f"HP: {player_health_val}", True, (255, 0, 0))
     screen.blit(health_text, (10, screen.get_height() - 45))
 
+    # Game Over
+    game.game_over(player_health_val, screen)
+
     # Отладка VVV
     # Визуализация линии выстрела
     # line_height = 5

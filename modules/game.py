@@ -63,3 +63,18 @@ def drawing_objects(screen, background, background1_rect, background2_rect, pist
                     shotgun_icon_on_bar, shotgun_icon_on_bar_rect, mp5_icon_on_bar, mp5_icon_on_bar_rect,\
                     supershotgun_icon_on_bar, supershotgun_icon_on_bar_rect, machine_gun_icon_on_bar,\
                     machine_gun_icon_on_bar_rect, enemy)
+
+def game_over(player_health_val, screen):
+    if player_health_val <= 0:
+        screen.fill((255, 0, 0))
+        game_over_font = pygame.font.Font("assets/fonts/doom.ttf", 72)
+        game_over_text = game_over_font.render("GAME OVER", True, (0, 0, 0))
+        text_rect = game_over_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+        screen.blit(game_over_text, text_rect)
+        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
