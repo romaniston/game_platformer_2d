@@ -327,19 +327,20 @@ class Enemy(pygame.sprite.Sprite):
             # Атака проджектайлом
             if self.who_is in ['imp', 'baron', 'cacodemon', 'cyberdemon']:
                 if self.attack_timer >= self.attack_cooldown:
-                    if not self.enemy_attack_sound_active:
-                        self.enemy_attack_sound.play()
-                        self.enemy_attack_sound_active = True
+                    if self.rect.x < 700:  # if enemy not out the screen
+                        if not self.enemy_attack_sound_active:
+                            self.enemy_attack_sound.play()
+                            self.enemy_attack_sound_active = True
 
-                    self.image = pygame.transform.scale(self.attack_images[self.attack_index], self.enemy_size)
-                    self.attack_index += 1
-                    if self.attack_index >= len(self.attack_images):
-                        dx = self.player_pos_x
-                        dy = player_on_ground_y
-                        length = max(1, math.hypot(dx, dy))
-                        self.shoot_projectile(player_pos_y, self.who_is)
-                        self.attack_timer = 0
-                        self.attack_index = 0
+                        self.image = pygame.transform.scale(self.attack_images[self.attack_index], self.enemy_size)
+                        self.attack_index += 1
+                        if self.attack_index >= len(self.attack_images):
+                            dx = self.player_pos_x
+                            dy = player_on_ground_y
+                            length = max(1, math.hypot(dx, dy))
+                            self.shoot_projectile(player_pos_y, self.who_is)
+                            self.attack_timer = 0
+                            self.attack_index = 0
 
         elif self.health <= 0:
             self.is_alive = False
