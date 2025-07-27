@@ -18,7 +18,7 @@ background, background_rect, background_width, background1_rect, background2_rec
     game.set_backrounds("assets/background/background.jpg")
 
 # Установка и запуск фоновой музыки
-game.set_background_music("assets/background/background_music.mp3")
+# game.set_background_music("assets/background/background_music.mp3")
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
