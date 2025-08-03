@@ -13,12 +13,19 @@ pygame.init()
 screen, WIDTH, HEIGHT =\
     game.set_screen_resolution(800, 360)
 
+# main menu
+bg_path, music_path = game.show_start_menu(screen)
+background_image = pygame.image.load(bg_path)
+background_image = pygame.transform.scale(background_image, screen.get_size())
+pygame.mixer.music.load(music_path)
+pygame.mixer.music.play(-1)
+
 # Установка бэкграунда
 background, background_rect, background_width, background1_rect, background2_rect =\
-    game.set_backrounds("assets/background/background.jpg")
+    game.set_backrounds(bg_path)
 
 # Установка и запуск фоновой музыки
-# game.set_background_music("assets/background/background_music.mp3")
+game.set_background_music(music_path)
 
 # Установка спрайтов игрока
 player_image_player_stands_path, player_image, player_size, player_image, player_walks,\
@@ -265,7 +272,7 @@ while True:
     player_hitbox = player.get_player_hitbox(player_pos_x, player_pos_y, player_size)
 
     # Здоровье
-    font = pygame.font.Font("assets/fonts/doom.ttf", 36)
+    font = pygame.font.Font("assets/fonts/amazdoomright.ttf", 36)
     player_health_val = player.set_player_parameters(only_health=True, change_health=False, change_val=0)
     health_text = font.render(f"HP: {player_health_val}", True, (255, 0, 0))
     screen.blit(health_text, (10, screen.get_height() - 45))
