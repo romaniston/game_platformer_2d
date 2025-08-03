@@ -52,7 +52,6 @@ pistol_icon_on_bar, pistol_icon_on_bar_size, pistol_icon_on_bar_rect,\
 
 # Установка звуковых эффектов
 player_shoots_sound, player_jumps_sound, player_runs_sound = player.set_player_sounds()
-
 selected_weapon_sound = weapon.set_selected_weapon_sounds()
 
 # Переменные для отслеживания времени смены кадров анимации
@@ -229,6 +228,10 @@ while True:
             if event.key in (pygame.K_a, pygame.K_d):
                 player_speed = 0
                 player_runs_sound.stop()
+
+    # sounds volume
+    selected_weapon_sound.set_volume(0.2)
+    player_shoots_sound.set_volume(0.2)
 
     # Воспроизведение звука бега, если игрок находится на земле и движется
     is_running_sound_playing = player.player_walks_sound(on_ground, player_speed, is_running_sound_playing, player_runs_sound)

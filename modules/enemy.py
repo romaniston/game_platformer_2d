@@ -215,6 +215,11 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_proj_blow_sound = enemy_proj_blow_sound
         self.who_is = who_is
 
+        self.enemy_dies_sound.set_volume(0.2)
+        if self.who_is != 'pinky':
+            self.enemy_attack_sound.set_volume(0.2)
+            self.enemy_proj_blow_sound.set_volume(0.2)
+
         # Подсчет числа спрайтов относительно выбранного негодника
         if who_is == 'imp':
             sprite_count = {'death': 6, 'walks': 4}
