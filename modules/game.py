@@ -31,18 +31,19 @@ def set_background_music(background_music_path):
 
 
 backgrounds = [
-    {"name": "background_1", "path": "assets/background/background_1.jpg"},
-    {"name": "background_2", "path": "assets/background/background_2.jpg"},
-    {"name": "background_3", "path": "assets/background/background_3.jpg"}
+    {"name": "Background 1", "path": "assets/background/background_1.jpg"},
+    {"name": "Background 2", "path": "assets/background/background_2.jpg"},
+    {"name": "Background 3", "path": "assets/background/background_3.jpg"}
 ]
 
 musics = [
-    {"name": "track_1", "path": "assets/soundtrack/track_1.mp3", "demo": "assets/soundtrack/track_1_short.wav"},
-    {"name": "track_2", "path": "assets/soundtrack/track_2.mp3", "demo": "assets/soundtrack/track_2_short.wav"},
-    {"name": "track_3", "path": "assets/soundtrack/track_3.mp3", "demo": "assets/soundtrack/track_3_short.wav"},
-    {"name": "track_4", "path": "assets/soundtrack/track_4.mp3", "demo": "assets/soundtrack/track_4_short.wav"},
-    {"name": "track_5", "path": "assets/soundtrack/track_5.mp3", "demo": "assets/soundtrack/track_5_short.wav"},
-    {"name": "track_6", "path": "assets/soundtrack/track_6.mp3", "demo": "assets/soundtrack/track_6_short.wav"},
+    {"name": "Track 1", "path": "assets/soundtrack/track_1.mp3", "demo": "assets/soundtrack/track_1_short.wav"},
+    {"name": "Track 2", "path": "assets/soundtrack/track_2.mp3", "demo": "assets/soundtrack/track_2_short.wav"},
+    {"name": "Track 3", "path": "assets/soundtrack/track_3.mp3", "demo": "assets/soundtrack/track_3_short.wav"},
+    {"name": "Track 4", "path": "assets/soundtrack/track_4.mp3", "demo": "assets/soundtrack/track_4_short.wav"},
+    {"name": "Track 5", "path": "assets/soundtrack/track_5.mp3", "demo": "assets/soundtrack/track_5_short.wav"},
+    {"name": "Track 6", "path": "assets/soundtrack/track_6.mp3", "demo": "assets/soundtrack/track_6_short.wav"},
+    {"name": "No Music", "path": "assets/soundtrack/silent.wav", "demo": "assets/soundtrack/silent.wav"},
 ]
 
 

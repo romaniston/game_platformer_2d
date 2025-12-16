@@ -138,6 +138,7 @@ class Projectile(pygame.sprite.Sprite):
                 self.kill()
         else:
             if not  self.proj_blow_sound_active:
+                self.enemy_proj_blow_sound.set_volume(0.2)
                 self.enemy_proj_blow_sound.play()
                 self.proj_blow_sound_active = True
 
