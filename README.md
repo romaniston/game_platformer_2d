@@ -15,6 +15,8 @@ Screenshots:
 ________________________________
 Demo:
 <br>
-<p>
+<p><video width="800" controls>
+  <source src="demo/demo.mp4" type="video/mp4">
+</video>
 
 
