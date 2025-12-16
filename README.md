@@ -1,18 +1,18 @@
 # game_platformer_2d
 <p>A platformer game based on DOOM on PyGame
-________________________________
+<p>________________________________
 <p>Управление:
 <p>W, A, D - Ходьба и прыжок.
 <p>LSHIFT и RSHIFT - Бег.
 <p>Пробел - Стрельба.
 <p>Цифры - Выбор оружия.
-________________________________
+<p>________________________________
 <p>Screenshots:
 <br>
 <p><img src="screenshots/screen_1.png"></img>
 <p><img src="screenshots/screen_2.png"></img>
 <p><img src="screenshots/screen_3.png"></img>
-________________________________
+<p>________________________________
 <p>Demo:
 <br>
 <p><video width="800" controls>
